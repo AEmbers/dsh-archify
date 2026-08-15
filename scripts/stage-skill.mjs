@@ -72,4 +72,6 @@ function stageCleanArchify(dest) {
 
 fs.rmSync(path.join(repoRoot, 'skills'), { recursive: true, force: true });
 stageCleanArchify(stageRoot);
-process.stdout.write(`staged skills/archify (${trackedArchifyFiles().length} tracked files, clean)\n`);
+// stderr, not stdout: npm pack --json and other consumers parse stdout as JSON,
+// and prepare output on stdout would corrupt machine-readable receipts.
+process.stderr.write(`staged skills/archify (${trackedArchifyFiles().length} tracked files, clean)\n`);
