@@ -20,11 +20,19 @@
 //   reach-share-card, readme-showcase, real-repository-proof, release-identity,
 //   release-package-gates, repository-evidence, route-share-card,
 //   share-card-export, start-page            — upstream website/release-bound (skipped)
+//   generate-validators                      — needs ajv devDependency (skipped; see below)
 //
 // repository-evidence.test.mjs additionally requires committing inside a temp
 // git repo, which this machine's global commit-fuse blocks; it fails identically
 // in the upstream checkout (verified), so it is an environment-bound skip, not a
 // port regression.
+//
+// generate-validators.test.mjs regenerates the schema validators via ajv, the
+// archify devDependency. The adapter manifest deliberately carries zero
+// dependency fields (upstream security posture), so a clean `npm ci` has no
+// ajv; the committed `renderers/shared/generated-validators.mjs` is byte-pinned
+// in THIRD_PARTY_NOTICES.md and re-verified by test/zero-regression.test.mjs,
+// which is the port's freshness contract.
 
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -41,6 +49,7 @@ const UPSTREAM_WEBSITE_BOUND = new Set([
   'community-proof-intake.test.mjs',
   'cursor-onboarding.test.mjs',
   'gallery.test.mjs',
+  'generate-validators.test.mjs',
   'guide-page.test.mjs',
   'landing.test.mjs',
   'ordinary-model-floor.test.mjs',
