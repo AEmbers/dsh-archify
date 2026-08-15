@@ -210,10 +210,12 @@ git -C /tmp/archify-upstream checkout fc6e8aca1829a02af0f0efdc193a87c3754d373c
 diff -r /tmp/archify-upstream/archify ./archify && echo "archify/ identical"
 diff -r /tmp/archify-upstream/examples ./examples && echo "examples/ identical"
 
-# 3) 与上游官方 DSH tarball 的 skills/archify 比对（tarball 不含 test/ 与
-#    generate-validators.mjs，diff 时排除这两个路径）
+# 3) 与上游官方 DSH tarball 的 skills/archify 比对
+#    tarball 不含 test/、generate-validators.mjs 与 package-lock.json，且其
+#    package.json 是 npm 发布的精简版（无 scripts / devDependencies）——
+#    diff 时一并无视这五个路径。用 -x（macOS/BSD 与 GNU diff 都支持）而非 --exclude=。
 curl -sL https://registry.npmjs.org/@tt-a1i/archify-dsh/-/archify-dsh-0.1.0.tgz | tar xz -C /tmp
-diff -r --exclude=test --exclude=generate-validators.mjs /tmp/package/skills/archify ./archify \
+diff -r -x test -x generate-validators.mjs -x package.json -x package-lock.json -x node_modules /tmp/package/skills/archify ./archify \
   && echo "skills/archify identical (modulo tarball exclusions)"
 ```
 
