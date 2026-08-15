@@ -200,9 +200,9 @@ a7a3b2836f7f5795173db40527a9d2df1c53c99ac3a08049617ccef3072629c0  examples/workf
 
 ```bash
 # 1) 对当前仓库直接重算（应逐行命中上面的清单）
-sha256sum $(git ls-files archify examples | sed 's/^/\"/;s/$/\"/') 2>/dev/null \
-  | sed 's/  "/  /;s/"$//' | sort > /tmp/ours.sha256
-grep -c '^' /tmp/verbatim 2>/dev/null || true
+#    macOS 没有 GNU sha256sum，用 shasum -a 256（两者输出格式同为 "<hash>  <path>"）
+hashcmd() { command -v sha256sum >/dev/null 2>&1 && echo sha256sum || echo "shasum -a 256"; }
+git ls-files -z archify examples | xargs -0 $(hashcmd) | sort
 
 # 2) 与上游钉住的 commit 全树比对（需要 git）
 git clone --no-checkout https://github.com/tt-a1i/archify /tmp/archify-upstream

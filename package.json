@@ -45,7 +45,6 @@
   "scripts": {
     "prepare": "node scripts/stage-skill.mjs",
     "test": "node --test test/*.test.mjs && node scripts/run-skill-tests.mjs",
-    "test:adapter": "node --test test/*.test.mjs",
     "test:skill": "node scripts/run-skill-tests.mjs",
     "pack": "node scripts/pack.mjs"
   },

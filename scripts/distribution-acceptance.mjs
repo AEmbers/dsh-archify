@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnCli, spawnCliSync } from './resolve-cli.mjs';
+import { excludeFromCleanStaging, listRelativeFiles } from './staging.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const integrationRoot = path.resolve(here, '..');
@@ -53,52 +54,6 @@ function requireStatus(stage, result, extra = {}) {
       result.stderr,
     ].filter(Boolean).join('\n'), extra);
   }
-}
-
-function listRelativeFiles(root) {
-  const files = [];
-  function walkDir(dir, prefix) {
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      const relative = path.posix.join(prefix, entry.name);
-      if (entry.isDirectory()) walkDir(path.join(dir, entry.name), relative);
-      else files.push(relative);
-    }
-  }
-  walkDir(root, '');
-  return files.sort();
-}
-
-const CHECKOUT_TEXT_EXTENSIONS = new Set(['.html', '.json', '.md', '.mjs']);
-
-function checkoutContentsEqual(file, left, right, normalizeTextEol) {
-  if (left.equals(right)) return true;
-  if (!normalizeTextEol) return false;
-  const isCheckoutText = path.basename(file) === 'LICENSE'
-    || CHECKOUT_TEXT_EXTENSIONS.has(path.extname(file).toLowerCase());
-  if (!isCheckoutText) return false;
-  return left.toString('utf8').replaceAll('\r\n', '\n')
-    === right.toString('utf8').replaceAll('\r\n', '\n');
-}
-
-function treesMatch(left, right, { normalizeTextEol = false } = {}) {
-  const leftFiles = listRelativeFiles(left);
-  const rightFiles = listRelativeFiles(right);
-  if (leftFiles.join('\n') !== rightFiles.join('\n')) {
-    return { ok: false, leftFiles, rightFiles };
-  }
-  for (const file of leftFiles) {
-    const leftPath = path.join(left, ...file.split('/'));
-    const rightPath = path.join(right, ...file.split('/'));
-    if (!checkoutContentsEqual(
-      file,
-      fs.readFileSync(leftPath),
-      fs.readFileSync(rightPath),
-      normalizeTextEol,
-    )) {
-      return { ok: false, file };
-    }
-  }
-  return { ok: true };
 }
 
 function parseDump(yaml) {
@@ -413,24 +368,13 @@ const repoSkill = path.join(repoRoot, 'archify');
 // package-lock). The upstream script compared against its committed
 // `archify.zip` and git blob pins — that machinery does not exist in a port
 // repo, and the same byte-level contract is enforced by comparing the packed
-// payload against the tracked skill tree here.
-function excludeForFidelity(relative) {
-  const parts = relative.split(path.sep);
-  if (parts.includes('test')) return true;
-  if (parts.includes('node_modules')) return true;
-  if (parts.includes('.DS_Store')) return true;
-  if (parts.includes('.hive')) return true;
-  if (parts.includes('.workbuddy')) return true;
-  if (parts.some((part) => part.startsWith('.validator-check-'))) return true;
-  if (parts.join('/') === 'scripts/generate-validators.mjs') return true;
-  return false;
-}
-
+// payload against the tracked skill tree here. Exclusion rules are shared with
+// staging via ./staging.mjs.
 function trackedSkillFiles() {
   const tracked = run('git', ['ls-files', '-z', '--', 'archify'], { cwd: repoRoot });
   return tracked.stdout.split('\0').filter(Boolean)
     .map((entry) => entry.replace(/^archify\//, ''))
-    .filter((relative) => !excludeForFidelity(relative) && relative !== 'package-lock.json');
+    .filter((relative) => !excludeFromCleanStaging(relative));
 }
 
 const packedList = listRelativeFiles(packedSkill);

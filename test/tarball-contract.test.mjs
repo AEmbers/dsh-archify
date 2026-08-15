@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { excludeFromCleanStaging, listRelativeFiles } from '../scripts/staging.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..');
@@ -29,32 +30,6 @@ function packTarball() {
     encoding: 'utf8',
   });
   return { scratch, out, result };
-}
-
-function excludeForCleanStaging(relative) {
-  const parts = relative.split(path.sep);
-  if (parts.includes('test')) return true;
-  if (parts.includes('node_modules')) return true;
-  if (parts.includes('.DS_Store')) return true;
-  if (parts.includes('.hive')) return true;
-  if (parts.includes('.workbuddy')) return true;
-  if (parts.some((part) => part.startsWith('.validator-check-'))) return true;
-  if (parts.join('/') === 'scripts/generate-validators.mjs') return true;
-  if (relative === 'package-lock.json') return true;
-  return false;
-}
-
-function listRelativeFiles(root) {
-  const files = [];
-  function walkDir(dir, prefix) {
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      const relative = path.posix.join(prefix, entry.name);
-      if (entry.isDirectory()) walkDir(path.join(dir, entry.name), relative);
-      else files.push(relative);
-    }
-  }
-  walkDir(root, '');
-  return files.sort();
 }
 
 test('pack command emits a real npm tarball with the expected identity and file list', () => {
@@ -106,7 +81,7 @@ test('packed Skill payload matches the clean-staging contract of the tracked ski
     const repoSkill = path.join(repoRoot, 'archify');
     const packedList = listRelativeFiles(packedSkill);
     const expectedList = listRelativeFiles(repoSkill)
-      .filter((relative) => !excludeForCleanStaging(relative));
+      .filter((relative) => !excludeFromCleanStaging(relative));
     assert.deepEqual(packedList, expectedList, 'packed file list must equal the clean-staged skill tree');
     for (const relative of packedList) {
       if (relative === 'package.json') continue; // staging strips scripts/devDependencies

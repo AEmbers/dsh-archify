@@ -102,9 +102,12 @@ npm run test:skill   # 只跑技能测试
 node scripts/pack.mjs --out /tmp/dsh-archify.tgz   # 本地打 tarball
 ```
 
-`scripts/run-skill-tests.mjs` 会跳过 18 个绑定上游仓库根目录网站/发布文件的技能测试
-（`docs/`、`README_ZH.md`、`benchmarks/`、`ROADMAP.md`、`.github/` 等，见文件内清单）——
-那些文件不属于技能本体，未移植；被跳过的测试文件本身仍在 `archify/test/` 原样保留。
+`scripts/run-skill-tests.mjs` 会跳过 19 个无法在移植仓库运行的技能测试：18 个绑定上游仓库
+根目录网站/发布文件的测试（`docs/`、`README_ZH.md`、`benchmarks/`、`ROADMAP.md`、
+`.github/` 等，见文件内清单）加 1 个依赖 ajv devDependency 的
+`generate-validators.test.mjs`（adapter 按上游安全姿态刻意保持零依赖；提交的
+`generated-validators.mjs` 已由 THIRD_PARTY_NOTICES.md 钉住哈希并在每次 `npm test`
+重验）。被跳过的测试文件本身仍在 `archify/test/` 原样保留。
 
 ## 📄 License
 
@@ -224,10 +227,13 @@ npm run test:skill   # skill tests only
 node scripts/pack.mjs --out /tmp/dsh-archify.tgz   # build a tarball locally
 ```
 
-`scripts/run-skill-tests.mjs` skips 18 skill tests bound to upstream repo-root website/release
-files (`docs/`, `README_ZH.md`, `benchmarks/`, `ROADMAP.md`, `.github/`, …; list inside the
-file) — those files are not part of the skill payload and were not ported; the skipped test
-files remain untouched under `archify/test/`.
+`scripts/run-skill-tests.mjs` skips 19 skill tests that cannot run in the port repo: 18
+bound to upstream repo-root website/release files (`docs/`, `README_ZH.md`, `benchmarks/`,
+`ROADMAP.md`, `.github/`, …; list inside the file) plus `generate-validators.test.mjs`,
+which needs the ajv devDependency the adapter deliberately does not carry (upstream
+security posture; the committed `generated-validators.mjs` is hash-pinned in
+THIRD_PARTY_NOTICES.md and re-verified on every `npm test`). The skipped test files
+remain untouched under `archify/test/`.
 
 ## 📄 License
 
