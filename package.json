@@ -1,6 +1,6 @@
 {
   "name": "dsh-archify",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "DeepSeek Harness 插件：用 JSON 规格生成可验证的架构图、流程图、时序图、数据流图与生命周期图（移植自 tt-a1i/archify）",
   "license": "MIT",
   "type": "module",
@@ -28,7 +28,11 @@
     "sequence-diagram",
     "workflow",
     "dataflow",
-    "lifecycle"
+    "lifecycle",
+    "erd",
+    "class-diagram",
+    "timeline",
+    "waterfall"
   ],
   "engines": {
     "node": "^22.19.0 || >=24.0.0",
@@ -45,7 +49,7 @@
   "author": "GongYuanCaiJi",
   "scripts": {
     "stage": "node scripts/stage-skill.mjs",
-    "test": "node --test test/*.test.mjs && node scripts/run-skill-tests.mjs",
+    "test": "node --test test/*.test.mjs",
     "test:skill": "node scripts/run-skill-tests.mjs",
     "pack": "node scripts/pack.mjs"
   },

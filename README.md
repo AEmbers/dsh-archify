@@ -6,19 +6,20 @@
 [![DSH](https://img.shields.io/badge/DSH-DeepSeek%20Harness-blue.svg)](https://github.com/deepseek-ai/deepseek-harness)
 [![上游](https://img.shields.io/badge/移植自-archify-orange.svg)](https://github.com/tt-a1i/archify)
 
-> **一句话：给 DeepSeek Harness 一个会画图的 agent 技能 —— 用 JSON 规格生成可验证的架构图、流程图、时序图、数据流图与生命周期图，输出独立 HTML。**
+> **一句话：给 DeepSeek Harness 一个会画图的 agent 技能 —— 用 JSON 规格生成可验证的架构图、流程图、时序图、数据流图、生命周期图、ER 图、类图、树图、时间线与请求瀑布图，输出独立 HTML。**
 
-移植自 [`tt-a1i/archify`](https://github.com/tt-a1i/archify)（MIT，v2.14.0，官方 DSH 包 `@tt-a1i/archify-dsh@0.1.0` 同源同版本）。
+移植自 [`tt-a1i/archify`](https://github.com/tt-a1i/archify)（MIT，`v3.1.0` / 技能版本 3.1.0；官方 npm 包 `@tt-a1i/archify-dsh@1.0.0` 里打包的是技能 3.0.1，本 fork 比它新一版）。
 技能本体（`archify/` 与 `examples/`）逐字保留，只适配了 dsh 的打包与命名。
 
 ## ✨ 功能
 
-- 🗺️ **五种图型** —— architecture / workflow / sequence / dataflow / lifecycle，一个 JSON 规格对应一种
+- 🗺️ **十种图型** —— architecture / workflow / sequence / dataflow / lifecycle，加上 3.1 新增的 erd / class / tree / timeline / waterfall，一个 JSON 规格对应一种
 - ✅ **可验证** —— 提交前跑 `validate`，确定性校验给出 9 项验收（showcase）或基础验收（standard）
 - 🌗 **深浅主题 + 视觉预设** —— classic 默认，signal-flow / blueprint / editorial 按需切换
 - 📤 **多格式导出** —— 独立 HTML、PNG、SVG、WebM，以及 1200×630 分享卡片
 - 🔀 **Mermaid 输入** —— 粘贴 flowchart / sequenceDiagram / stateDiagram，转为 Archify JSON 再美化
 - 🔍 **架构对比** —— `compare` 两份快照，输出 Before / Delta / After 三态 HTML
+- 🌏 **界面文案多语言** —— `locales/` 提供技能输出的界面语言（3.1 新增）
 
 ## 📸 效果
 
@@ -74,42 +75,52 @@ dsh plugin --profile <你的 profile> remove dsh-archify
 **Produced Files 限制：** shell 命令生成的文件不会自动出现在 Web 端的 Produced Files 栏，
 请让 agent 返回规格 JSON 与 HTML 工件的**精确工作区路径**，再从工作区打开（上游官方 DSH 包同样如此）。
 
-**安全姿态：** 无遥测、无网络客户端、无凭据处理、无后台服务；没有 `install` / `postinstall` /
-`preinstall` 生命周期钩子（仅 `prepare` 暂存技能文件）。
+**安全姿态：** 无遥测、无网络客户端、无凭据处理、无后台服务；**没有任何生命周期脚本**
+（`install` / `postinstall` / `preinstall` / `prepare` 全无），`skills/` 产物直接提交在仓库里。
 
 <details>
-<summary>移植说明（对上游 <code>tt-a1i/archify</code> @ <code>archify-dsh-v0.1.0</code>）</summary>
+<summary>移植说明（对上游 <code>tt-a1i/archify</code> @ <code>v3.1.0</code>）</summary>
 
 逐字保留，`diff` 可验证：`archify/`（SKILL.md、renderers、schemas、bin、examples、recipes、
-references、assets、delta、scripts、test）与根目录 `examples/` 全部为上游原文件。
+references、assets、delta、scripts、locales、brand-marks、migrations）与根目录 `examples/`
+全部为上游原文件。
 
 **这一点你可以自己验，不必信我们** —— [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)
-钉住了上游 release tag、commit 与逐字文件的 SHA-256，附可直接复制的比对命令；
-`test/zero-regression.test.mjs` 每次 `npm test` 都会重算比对。
+钉住了上游 release tag、commit 与全部 182 个逐字文件的 SHA-256，附可直接复制的比对命令；
+`test/zero-regression.test.mjs` 每次 `npm test` 都会重算比对，并要求清单恰好覆盖
+`git ls-files archify examples` 全树。
 
-适配处（上游官方 DSH 包 `@tt-a1i/archify-dsh@0.1.0` → `dsh-archify`）：
-包名与解析路径改为 `dsh-archify`；新增 `prepare`（上游发预构建 tarball，git 安装需要
-自行暂存 `skills/`）；上游仓库根目录的网站/发布文件（`docs/`、`README_EN.md`、
-`README_ZH.md`、`benchmarks/`、`.github/` 等）不属于技能本体，未移植。
+适配处（上游官方 DSH 包 `@tt-a1i/archify-dsh@1.0.0` → `dsh-archify`）：
+包名与解析路径改为 `dsh-archify`；`skills/` 由 `npm run stage` 生成并提交（上游发预构建
+tarball，git 安装需要自行暂存）；上游仓库根目录的网站/发布文件（`docs/`、`website/`、
+`README_EN.md`、`benchmarks/`、`.github/` 等）不属于技能本体，未移植。
 
-**已知限制：** 技能文案是英文 —— 那是上游原文，逐字保留未做翻译。
+**测试策略：** 上游在 3.1 线把测试从 `archify/test/` 移到仓库根 `test/`，且发布包
+（`archify.zip`）不再带测试；那些测试按上游仓库布局解析路径，搬进来必须改写，改写就破坏了
+逐字保留。本 fork 因此不带上游测试，改为从外部验证：
+
+- `test/examples-parity.test.mjs` —— 用本包 renderer 重渲染全部 25 个示例规格，并把其中
+  15 个有上游规范渲染的示例**逐字节**比对（渲染确定性 ⇒ renderer/schema/template/内嵌
+  校验器任一处漂移都会暴露）。
+- `test/zero-regression.test.mjs` —— 重算 SHA-256 清单并校验覆盖度。
+
+**已知限制：** 技能文案是英文 —— 那是上游原文，逐字保留未做翻译（3.1 新增的 `locales/`
+只影响生成图里的界面文案语言）。
 </details>
 
 ## 🛠 开发
 
 ```bash
-npm install      # prepare 暂存 skills/archify
-npm test         # adapter 测试 + 技能自身测试（golden + 全部自包含单测）
-npm run test:skill   # 只跑技能测试
+npm install          # 无生命周期脚本，装完即可用
+npm run stage        # 由 archify/ 重新生成并提交 skills/archify
+npm test             # adapter 契约测试 + 示例渲染一致性 + 哈希清单复算
 node scripts/pack.mjs --out /tmp/dsh-archify.tgz   # 本地打 tarball
 ```
 
-`scripts/run-skill-tests.mjs` 会跳过 19 个无法在移植仓库运行的技能测试：18 个绑定上游仓库
-根目录网站/发布文件的测试（`docs/`、`README_ZH.md`、`benchmarks/`、`ROADMAP.md`、
-`.github/` 等，见文件内清单）加 1 个依赖 ajv devDependency 的
-`generate-validators.test.mjs`（adapter 按上游安全姿态刻意保持零依赖；提交的
-`generated-validators.mjs` 已由 THIRD_PARTY_NOTICES.md 钉住哈希并在每次 `npm test`
-重验）。被跳过的测试文件本身仍在 `archify/test/` 原样保留。
+`npm test` 覆盖：包/清单契约（版本 0.2.0、零依赖、无生命周期脚本）、`cordis.patch.yml`
+的插入块、tarball 内容与 clean-staging 一致、`skills/` 与 `archify/` 逐字节一致、
+THIRD_PARTY_NOTICES 哈希清单、十种图型的示例渲染与上游规范渲染逐字节一致。
+`npm run test:skill` 在上游测试缺席时直接跳过并打印原因（见上）。
 
 ## 📄 License
 
@@ -130,19 +141,20 @@ MIT。上游 [`tt-a1i/archify`](https://github.com/tt-a1i/archify)
 [![DSH](https://img.shields.io/badge/DSH-DeepSeek%20Harness-blue.svg)](https://github.com/deepseek-ai/deepseek-harness)
 [![Upstream](https://img.shields.io/badge/port%20of-archify-orange.svg)](https://github.com/tt-a1i/archify)
 
-> **One line: a diagramming agent skill for DeepSeek Harness — turn a small typed JSON spec into a validated architecture, workflow, sequence, data-flow, or lifecycle diagram as a self-contained HTML artifact.**
+> **One line: a diagramming agent skill for DeepSeek Harness — turn a small typed JSON spec into a validated architecture, workflow, sequence, data-flow, lifecycle, ER, class, tree, timeline, or request-waterfall diagram as a self-contained HTML artifact.**
 
-A port of [`tt-a1i/archify`](https://github.com/tt-a1i/archify) (MIT, v2.14.0; same source as the official `@tt-a1i/archify-dsh@0.1.0`).
+A port of [`tt-a1i/archify`](https://github.com/tt-a1i/archify) (MIT, `v3.1.0` / skill 3.1.0; the official npm package `@tt-a1i/archify-dsh@1.0.0` still ships skill 3.0.1, so this fork is one release ahead).
 The skill payload (`archify/` and `examples/`) is byte-identical to upstream; only the dsh packaging and naming are adapted.
 
 ## ✨ Features
 
-- 🗺️ **Five diagram types** — architecture / workflow / sequence / dataflow / lifecycle from one JSON spec
+- 🗺️ **Ten diagram types** — architecture / workflow / sequence / dataflow / lifecycle, plus the 3.1 additions erd / class / tree / timeline / waterfall, from one JSON spec
 - ✅ **Verifiable** — deterministic `validate` with 9-check showcase or basic acceptance receipts
 - 🌗 **Themes & presets** — dark/light plus signal-flow / blueprint / editorial visual presets
 - 📤 **Exports** — standalone HTML, PNG, SVG, WebM, and 1200×630 share cards
 - 🔀 **Mermaid input** — paste flowchart / sequenceDiagram / stateDiagram, re-author as Archify JSON
 - 🔍 **Architecture compare** — `compare` two snapshots into Before / Delta / After HTML
+- 🌏 **Localized viewer UI** — `locales/` (new in 3.1)
 
 ## 📸 Effect
 
@@ -203,43 +215,54 @@ specification JSON and the HTML artifact, then open them from the workspace (sam
 official upstream DSH package).
 
 **Security posture:** no telemetry, network client, credentials handling, or background
-service; no `install` / `postinstall` / `preinstall` lifecycle hooks (only `prepare` stages
-the skill files).
+service; **no lifecycle scripts at all** (`install` / `postinstall` / `preinstall` / `prepare`);
+the `skills/` payload is committed to the repository.
 
 <details>
-<summary>Port notes (vs upstream <code>tt-a1i/archify</code> @ <code>archify-dsh-v0.1.0</code>)</summary>
+<summary>Port notes (vs upstream <code>tt-a1i/archify</code> @ <code>v3.1.0</code>)</summary>
 
 Byte-identical, diff-verifiable: `archify/` (SKILL.md, renderers, schemas, bin, examples,
-recipes, references, assets, delta, scripts, test) and the root `examples/` are upstream files.
+recipes, references, assets, delta, scripts, locales, brand-marks, migrations) and the root
+`examples/` are upstream files.
 
 **Verify it yourself — don't take our word** — [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)
-pins the upstream release tag, commit, and per-file SHA-256 with copy-paste compare commands;
-`test/zero-regression.test.mjs` re-checks the pins on every `npm test`.
+pins the upstream release tag, commit, and the SHA-256 of all 182 verbatim files with copy-paste
+compare commands; `test/zero-regression.test.mjs` re-checks the pins on every `npm test` and
+asserts the manifest covers `git ls-files archify examples` exactly.
 
-Adaptations (official `@tt-a1i/archify-dsh@0.1.0` → `dsh-archify`): package name and resolution
-path; added `prepare` (upstream ships a prebuilt tarball; a git install must stage `skills/`
-itself); upstream repo-root website/release files (`docs/`, `README_EN.md`, `README_ZH.md`,
-`benchmarks/`, `.github/`, …) are not part of the skill payload and were not ported.
+Adaptations (official `@tt-a1i/archify-dsh@1.0.0` → `dsh-archify`): package name and resolution
+path; `skills/` is generated by `npm run stage` and committed (upstream ships a prebuilt tarball);
+upstream repo-root website/release files (`docs/`, `website/`, `README_EN.md`, `benchmarks/`,
+`.github/`, …) are not part of the skill payload and were not ported.
 
-**Known limitation:** skill copy is English — that is upstream's original text, kept verbatim.
+**Testing strategy:** upstream moved its tests from `archify/test/` to the repo root `test/` in the
+3.1 line, and the published payload (`archify.zip`) carries none; those tests resolve paths against
+upstream's layout, so porting them would require rewriting them — which would break the
+verbatim-payload guarantee. This fork proves the payload from the outside instead:
+
+- `test/examples-parity.test.mjs` re-renders all 25 shipped example specs and byte-compares the 15
+  that have a canonical upstream render (rendering is deterministic, so any drift in renderers,
+  schemas, template, or embedded validators shows up here).
+- `test/zero-regression.test.mjs` recomputes the SHA-256 manifest and checks coverage.
+
+**Known limitation:** skill copy is English — that is upstream's original text, kept verbatim
+(the 3.1 `locales/` only affects viewer UI copy inside generated diagrams).
 </details>
 
 ## 🛠 Development
 
 ```bash
-npm install      # prepare stages skills/archify
-npm test         # adapter tests + skill's own tests (golden + self-contained units)
-npm run test:skill   # skill tests only
+npm install          # no lifecycle scripts; nothing to build
+npm run stage        # regenerate the committed skills/archify from archify/
+npm test             # adapter contract tests + example render parity + hash manifest
 node scripts/pack.mjs --out /tmp/dsh-archify.tgz   # build a tarball locally
 ```
 
-`scripts/run-skill-tests.mjs` skips 19 skill tests that cannot run in the port repo: 18
-bound to upstream repo-root website/release files (`docs/`, `README_ZH.md`, `benchmarks/`,
-`ROADMAP.md`, `.github/`, …; list inside the file) plus `generate-validators.test.mjs`,
-which needs the ajv devDependency the adapter deliberately does not carry (upstream
-security posture; the committed `generated-validators.mjs` is hash-pinned in
-THIRD_PARTY_NOTICES.md and re-verified on every `npm test`). The skipped test files
-remain untouched under `archify/test/`.
+`npm test` covers package/manifest contracts (version 0.2.0, zero dependencies, no lifecycle
+scripts), the `cordis.patch.yml` insert block, tarball contents vs clean staging, `skills/` vs
+`archify/` byte equality, the THIRD_PARTY_NOTICES hash manifest, and ten-type example parity
+against upstream's canonical renders. `npm run test:skill` prints a skip reason when the upstream
+suite is absent (see above).
 
 ## 📄 License
 

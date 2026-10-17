@@ -34,10 +34,10 @@ test('the port repo is a standalone package with the skill and adapter at the ro
   assert.equal(fs.existsSync(path.join(repoRoot, 'pnpm-workspace.yaml')), false);
 });
 
-test('publishable manifest is dsh-archify@0.1.1 with a DSH bundle patch and no install surface', () => {
+test('publishable manifest is dsh-archify@0.2.0 with a DSH bundle patch and no install surface', () => {
   const pkg = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   assert.equal(pkg.name, 'dsh-archify');
-  assert.equal(pkg.version, '0.1.1');
+  assert.equal(pkg.version, '0.2.0');
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.type, 'module');
   assert.equal(pkg.main, './lib/index.js');
@@ -89,4 +89,25 @@ test('distribution acceptance reserves stdout for its machine-readable JSON rece
   assert.match(runtimeInstall, /stdio:\s*\['ignore',\s*2,\s*2\]/);
   assert.doesNotMatch(source, /stdio:\s*['"]inherit['"]/);
   assert.equal([...source.matchAll(/process\.stdout\.write/g)].length, 2);
+});
+
+test('the ported skill tree declares one upstream version across package, release manifest, and SKILL.md', () => {
+  const skillManifest = JSON.parse(fs.readFileSync(path.join(repoRoot, 'archify/package.json'), 'utf8'));
+  const release = JSON.parse(fs.readFileSync(path.join(repoRoot, 'archify/skill-release.json'), 'utf8'));
+  const skillDoc = fs.readFileSync(path.join(repoRoot, 'archify/SKILL.md'), 'utf8');
+  const frontmatter = skillDoc.match(/^---\n([\s\S]*?)\n---/)?.[1] || '';
+  const declared = frontmatter.match(/version:\s*"?([0-9]+(?:\.[0-9]+)+)"?/)?.[1];
+
+  assert.equal(skillManifest.name, 'archify');
+  assert.match(skillManifest.version, /^\d+\.\d+\.\d+$/);
+  assert.equal(release.skillId, 'archify');
+  assert.equal(release.version, skillManifest.version);
+  assert.equal(release.source?.repository, 'https://github.com/tt-a1i/archify');
+  // SKILL.md carries the short form ("3.1" for 3.1.0) — compare the major.minor prefix.
+  assert.ok(declared, 'SKILL.md frontmatter must declare metadata.version');
+  assert.equal(skillManifest.version.split('.').slice(0, 2).join('.'), declared);
+  for (const type of ['architecture', 'workflow', 'sequence', 'dataflow', 'lifecycle', 'erd', 'tree', 'class', 'timeline', 'waterfall']) {
+    assert.ok(fs.existsSync(path.join(repoRoot, 'archify/renderers', type)), `missing renderer for ${type}`);
+    assert.ok(fs.existsSync(path.join(repoRoot, 'archify/schemas', `${type}.schema.json`)), `missing schema for ${type}`);
+  }
 });

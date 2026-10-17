@@ -66,10 +66,26 @@ const UPSTREAM_WEBSITE_BOUND = new Set([
   'start-page.test.mjs',
 ]);
 
+// Upstream moved its test suite from `archify/test/` to the repository root
+// (`<repo>/test/`) in the 3.1 line, and its published payload (archify.zip) no
+// longer carries any tests. Those tests resolve paths against upstream's own
+// layout (root examples/, docs/, README_*.md, benchmarks/, website/), so they are
+// not portable into this repo without rewriting them — and rewriting would break
+// the verbatim-payload guarantee. The port therefore proves the payload from the
+// outside instead: `test/examples-parity.test.mjs` re-renders every shipped
+// example spec and byte-compares each canonical upstream render, and
+// `test/zero-regression.test.mjs` re-checks the pinned SHA-256 manifest.
+if (!fs.existsSync(testRoot)) {
+  process.stdout.write(
+    'skill suite: skipped — upstream (3.1) ships its tests in the repo root, not in the payload; '
+    + 'payload integrity is verified by test/examples-parity.test.mjs and test/zero-regression.test.mjs\n',
+  );
+  process.exit(0);
+}
+
 const allTests = fs.readdirSync(testRoot)
   .filter((entry) => entry.endsWith('.test.mjs'))
-  .sort();
-const skipped = allTests.filter((entry) => UPSTREAM_WEBSITE_BOUND.has(entry));
+  .sort();const skipped = allTests.filter((entry) => UPSTREAM_WEBSITE_BOUND.has(entry));
 const runnable = allTests.filter((entry) => !UPSTREAM_WEBSITE_BOUND.has(entry));
 
 let failures = 0;

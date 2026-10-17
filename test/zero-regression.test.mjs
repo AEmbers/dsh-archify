@@ -53,10 +53,20 @@ test('every pinned verbatim file in THIRD_PARTY_NOTICES.md matches the tracked t
 
 test('the pinned upstream release tag and commit are declared in THIRD_PARTY_NOTICES.md', () => {
   const notices = fs.readFileSync(path.join(repoRoot, 'THIRD_PARTY_NOTICES.md'), 'utf8');
-  assert.match(notices, /archify-dsh-v0\.1\.0/);
-  assert.match(notices, /fc6e8aca/);
+  assert.match(notices, /v3\.1\.0/);
+  assert.match(notices, /1c2b42d660e4a7571813fb43839c79e3e9ca7720/);
   assert.match(notices, /integrity/i);
   assert.match(notices, /shasum/i);
+});
+
+test('the pinned manifest covers every tracked verbatim file and nothing extra', () => {
+  const pins = parsePinnedHashes(path.join(repoRoot, 'THIRD_PARTY_NOTICES.md'));
+  const tracked = git(['ls-files', 'archify', 'examples'])
+    .split('\n')
+    .filter(Boolean)
+    .sort();
+  assert.ok(tracked.length > 150, `tracked verbatim tree looks truncated: ${tracked.length}`);
+  assert.deepEqual(Object.keys(pins).sort(), tracked, 'pinned manifest must enumerate the whole verbatim tree');
 });
 
 test('the committed skills/ payload is byte-identical to a fresh clean staging', () => {

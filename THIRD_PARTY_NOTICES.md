@@ -7,193 +7,233 @@ This package is a port of [`tt-a1i/archify`](https://github.com/tt-a1i/archify).
 | | |
 |---|---|
 | Upstream repository | [tt-a1i/archify](https://github.com/tt-a1i/archify) |
-| Upstream release tag | `archify-dsh-v0.1.0` |
-| Upstream commit | [`fc6e8aca1829a02af0f0efdc193a87c3754d373c`](https://github.com/tt-a1i/archify/tree/fc6e8aca1829a02af0f0efdc193a87c3754d373c) |
-| Official DSH package | [`@tt-a1i/archify-dsh@0.1.0`](https://www.npmjs.com/package/@tt-a1i/archify-dsh) |
-| Tarball | `https://registry.npmjs.org/@tt-a1i/archify-dsh/-/archify-dsh-0.1.0.tgz` |
-| Integrity | `sha512-D8fDqV6DV/vo80Gj/3rgidd+hwBbhTVncaVoD5Uhh+DbgYlEoQQOmBVbhU5HW33wE5OqJP/2HkTRPJ0hf7W0tA==` |
-| shasum | `1840447f80d0f06eef92bebbefa646bede5336a9` |
+| Upstream release tag | `v3.1.0` (skill release `3.1.0`) |
+| Upstream commit | [`1c2b42d660e4a7571813fb43839c79e3e9ca7720`](https://github.com/tt-a1i/archify/tree/1c2b42d660e4a7571813fb43839c79e3e9ca7720) |
+| Official DSH package | [`@tt-a1i/archify-dsh@1.0.0`](https://www.npmjs.com/package/@tt-a1i/archify-dsh) (ships skill `3.0.1`) |
+| Tarball | `https://registry.npmjs.org/@tt-a1i/archify-dsh/-/archify-dsh-1.0.0.tgz` |
+| Integrity | `sha512-ae5L+SyZngy3EzYnWHHfccAYJCZh5e9MTkEBh7mrwTMfpwpFtkIhiOg2vI5xnluCS8CSb+Ne1hi1kOWRQQtGBQ==` |
+| shasum | `ed20b2970df62c6e0e9a9df58ecc68e063e5644e` |
 | License | MIT |
 
 ### 移植說明 / Port scope
 
-`archify/` 与 `examples/` 两个目录是**逐字保留**的上游文件（含全部 renderers、schemas、
-SKILL.md、examples 与测试），未做任何修改；`lib/`、`cordis.patch.yml`、`scripts/`、
-`test/` 中的 adapter 层按 dsh 命名（`dsh-archify`）做了最小适配。上游官方 DSH 包
-（`@tt-a1i/archify-dsh@0.1.0`）本身以 `skills/archify` 形式发布同样的技能内容，本移植
-与其同源同版本。
+`archify/` 与 `examples/` 两个目录是**逐字保留**的上游文件，未做任何修改：`archify/` 含
+SKILL.md、bin、renderers（architecture / workflow / sequence / dataflow / lifecycle / erd /
+class / tree / timeline / waterfall 十种）、schemas、assets/template.html、references、recipes、
+delta、scripts、locales、brand-marks、migrations 与 examples；根目录 `examples/` 是上游仓库
+`examples/` 的逐字副本（含十种图型的上游渲染产物）。
 
-上游仓库根目录的网站/发布文件（`docs/`、`README_EN.md`、`README_ZH.md`、
-`benchmarks/`、`ROADMAP.md`、`PRODUCT.md`、`DESIGN.md`、`.github/`、`CONTRIBUTING.md`
-与 `scripts/build-*`、`check-release-identity.mjs`）不属于技能本体，未移植。
+`lib/`、`cordis.patch.yml`、`scripts/`、`test/` 属于 adapter 层，按 dsh 命名
+（`dsh-archify`）做了最小适配。
+
+版本关系：本移植跟随上游仓库 tag `v3.1.0`（技能版本 3.1.0）。官方 DSH npm 包
+`@tt-a1i/archify-dsh@1.0.0` 里打包的技能是 `3.0.1`，因此本移植**比该 npm 包新一版**——
+3.1.0 相对 3.0.1 新增 erd / class / tree / timeline / waterfall 五种图型，
+以及 `locales/`、`brand-marks/`、`migrations/` 三个目录。
+
+测试：上游在 3.1 线把测试从 `archify/test/` 移到了**仓库根** `test/`，且发布的技能包
+（仓库根的 `archify.zip`）不再包含任何测试。上游测试按自己仓库布局解析路径
+（根 `examples/`、`docs/`、`README_*.md`、`benchmarks/`、`website/`），搬进本仓库必须改写，
+改写就破坏了「逐字保留」。因此本移植不携带上游测试，改为从外部验证技能本体：
+
+- `test/examples-parity.test.mjs` —— 用本包内的 renderer 重新渲染全部 25 个示例规格，
+  并把其中 15 个有上游规范渲染的示例**逐字节**比对（渲染器确定性 ⇒ 任一处 renderer /
+  schema / template / 内嵌校验器的改动都会在这里暴露）。
+- `test/zero-regression.test.mjs` —— 重算下列清单，逐条比对；并校验清单恰好覆盖
+  `git ls-files archify examples` 全树，不多不少。
+
+上游仓库根目录的网站/发布文件（`docs/`、`website/`、`benchmarks/`、`README_EN.md`、
+`ROADMAP.md`、`PRODUCT.md`、`DESIGN.md`、`.github/`、`CONTRIBUTING.md` 与
+`scripts/build-*`、`check-release-identity.mjs`）不属于技能本体，未移植。
 
 ### 逐字保留的文件 SHA-256 / Verbatim file hashes
 
-下列 SHA-256 是对应文件**当前仓库内容**的哈希，可自行验证：
+下列 SHA-256 是对应文件**当前仓库内容**的哈希，覆盖 `archify/` 与 `examples/` 全树
+（182 个文件）。可自行验证：
 
 ```text
-2f724fa953b4eaa8ec75fa56919ce474b57adce54d2456a3791510bc53735cbd  archify/LICENSE
-295b8662379fd0d23ae1220c5eb4c6e00c9c133f8303b8b107eadeca1047fd68  archify/SKILL.md
-ac3759587e5a5ecbae168fec63ac4dfda0cfa8d232f752597117076648798dcb  archify/package-lock.json
-db735316d5cd20586f25b25d6c3cd8d8cbd31726767698df73ab815e53625104  archify/package.json
-95886aa9c7e466cf81fa3b26e90e4338c1e5fc7460477549626a97061791a58c  archify/assets/template.html
-ed7b3f657c922d2c11523cca78d43b8e6e09b7a3245ec1319cf5145aad2a4cc4  archify/bin/archify.mjs
-add1722186683c12770c575585bbb8774919c15b87361e10d2fe834623223159  archify/bin/open-artifact.mjs
-c1f470655f3d09cf1a2f6745ab3cec407e5246926237b92a67d673c74e339e02  archify/bin/preview.mjs
-1c7bf59b871ae2333919e034e79cd506a51be4a51ad93689bde35c809a07ae5c  archify/bin/visual-check.mjs
-c89203f7f4954adc5626246f5dbf8b26486d7c3631c5978487fc664aaa0ed64f  archify/delta/architecture-delta.mjs
-af939579dcafc8b4c49f09594591577994398aee57a57369d4c791dfc0d85a42  archify/examples/agent-run.lifecycle.json
-9c94c8c0b2104478b77befb4cc5e343d381acba6e66645ab17616fde20b60e05  archify/examples/agent-tool-call.workflow.json
-545f20920c89b69c2bb1f15508d5543fddbeb15cffba61e102206e04bd5a5cd9  archify/examples/async-job-roundtrip.sequence.json
-4bbaa6ca3cd4036002fd5d0f3a332eb922cec69d09bac3d7925f95beb4308389  archify/examples/cache-miss-request.sequence.json
-c112195e7285e3e4aedaeab3e1f85f5891d30fccc2c260aebe4e1da12c80cf84  archify/examples/checkout-platform.base.architecture.json
-e3aaf47f77afeadafc81c6ce853dc1df68cc1e6932dec972cf478f4008fdda99  archify/examples/checkout-platform.head.architecture.json
-3c30dd770f181415c11ec0b0526d86991af2177fb790182ecb7bf47d0c798cd7  archify/examples/dataflow-product-analytics.html
-735c2c5819266e6ea2a71775b6eefce98b53030ce90cb721dc8e1d022ce5be71  archify/examples/deployment-release.lifecycle.json
-a92d6597ddbe164f395da32a7d4b33cfae08edd7d9600a6fb45a2058e5bbb43e  archify/examples/event-stream.dataflow.json
-5c760c82eee545dfb7da38a4e628059d7891af4cfbfc13c8a7009ea64f69aa1b  archify/examples/incident-response.workflow.json
-9ef047c4a029fa4649d84a0c299552a5d02f31ac0e3a51b7187b6696f33ed718  archify/examples/lifecycle-agent-run.html
-6fa38a7ccedf96da592d60b392783b846188eaa3ec9136c6dc06ca020e43a110  archify/examples/product-analytics.dataflow.json
-738e9c7f22e4e6e88f5aafc087dc58409105927daa9a79aaf240c8393654494f  archify/examples/production-deployment.architecture.json
-e5c880417eac1623923c3dd5461e0c78acd762e1621a28bd53fc14a84cad6a91  archify/examples/release-delivery.workflow.json
-738d651b8c3f3ff8b5b5298834cbd8b7acda5f46a456c5be031647cbc6eb2216  archify/examples/sequence-cache-miss-request.html
-b1753910784abc7e37952868051861c2c90d953aeb80342ebb59febdeec87612  archify/examples/web-app-rendered.html
-483350f5297df682aba4e4a0fa491307ce3d3abd725ae4df07fab177490752cf  archify/examples/web-app.architecture.json
-a7a3b2836f7f5795173db40527a9d2df1c53c99ac3a08049617ccef3072629c0  archify/examples/workflow-agent-tool-call-rendered.html
-8220aeaae507dcecedd4e544940b4db46accb0502b2bb512e87ca2ed6670e07f  archify/recipes/scenarios.mjs
-35220be7dee5792d630e0b5d5a3e4d57ddf16a497015a4674d0fdb0910f7811b  archify/references/authoring-contract.md
-15d2fb47412288c5a489c402877bf92e774d10f481f16f9d1af2fdd907fc0ba6  archify/references/delivery-contract.md
-dc0d9ffe6b9987d73d2d48710fce5ab4c120bbf1940ff1eb9355259c5d4f32b6  archify/references/viewer-runtime.md
+b799ab081703e7821ae5096d2c1abdf14bbdc75e8ea1c4045998c36ed6db9706  archify/LICENSE
+55c126d68c1fbef114ccdef8dd0e7f046419dc9203ac7f6dab1728f6bab3ca71  archify/SKILL.md
+0b7fb59365dc21c93b0f62526d74ee913aeec9ae532c112bc76afa7edcd56e14  archify/THIRD_PARTY_NOTICES.md
+c1ab7c666206842a02b35b30770dac0d7a10156ed401c9defc3f02a754d89e90  archify/assets/JetBrainsMono-OFL.txt
+d41049723af445573d8eb7b0dcc371d07d3f735a8a291c438148b8195bbea7d2  archify/assets/template.html
+5737a0e720579722b167456b3eb4dd301699b8685ef8f3669975e3fd18c15408  archify/bin/archify.mjs
+d5ad7d6d7d949a8a8c37af4f80d79a8b4e057245e30ba11866efb40c6771dafa  archify/bin/delivery-update.mjs
+fcdf818198f04b825e2a0f2892d0794768c16adac635482cbb8eb8ff61242484  archify/bin/finalize.mjs
+b0ab5f37c4f4556f76040dc862744afe9d4b65f319f35e1f9b505e0344b9c409  archify/bin/open-artifact.mjs
+95bdc09c7ea2679f137bf1bf4248cdb401a54da979ff4a16d518caafeae0070d  archify/bin/preview.mjs
+b3f7db21b3fc5341326207c1259aa787730120f42179eff50e481b0c6ad1e2d4  archify/bin/recover-output.mjs
+dfec28e3e6666c835cb60f4d34ccabc8a831915dbbfe363de8cffe11de6fae81  archify/bin/visual-check.mjs
+8b771a16322ce9ea47fdc00b9935e33adf0f3af608f2d735235443e15ef622e2  archify/brand-marks/README.md
+e1a6c555cbf8ea36fb8100a4a25824e7ab87bebe9871e450ba05b6dea3b036d6  archify/brand-marks/catalog.json
+80f25a93c1ae6f40ebd6c066a3cfbff468fc48f258755d3740f6347a45ebe7a8  archify/delta/architecture-delta.mjs
+5ba36f5ce91ed428cb48b599e275424916d82b619b9a3231cbd1bbc3966fc54b  archify/examples/agent-run.lifecycle.json
+d67965d50872c97e4ff3476271e645bf19fab6b3ab44e111bdb44b063e3aa36f  archify/examples/agent-tool-call.workflow.json
+e9c8d76528e8c38a68d9a8df2499c462f6b9633292ea43bf33350546ef2fd3a3  archify/examples/archify-dev-activity.timeline.json
+970617ee844ecfb1bb792c677aa8b85688abfd2cf8ab2365dc03ea9e26e6b9c7  archify/examples/archify-repository.tree.json
+b8c6c52f1763ede2933c77deb8da59b3e06917bc41d27e66df896136456b859a  archify/examples/async-job-roundtrip.sequence.json
+211c126ebdc5f0124617b1067cecfb858143a1a18fd10621d01f5765c7de3b5d  archify/examples/brand-aware-delivery.architecture.json
+f8486daa803fff6c295cecca4604c561fbbf9acb2e83326022b5a87639e8afe6  archify/examples/cache-miss-request.sequence.json
+81d55a2e86fc39f6473b32dfba986a12d3b7a705a95821844865b1dc831c9fe7  archify/examples/checkout-platform.base.architecture.json
+eb4ae056035dd3316414a5d7f6599525107b5d1af7bedbd905460ade77daf5c6  archify/examples/checkout-platform.head.architecture.json
+55a5f74699a0f0e44018a4a000556d43c90430b95f39accac6141af8318b5133  archify/examples/checkout-request.waterfall.json
+12240a8db8fdf6bb91e92dc71916c1dcef4873e7d3b1ba351b8bc00d9489d48b  archify/examples/class-payment-processors-rendered.html
+5b11c66ccaef1177e69ea28e8a04ee9d8ba5964e7476e1a1e57ce1fe36b4c53c  archify/examples/class-payments-rendered.html
+8577ad3f6800a87c8b4074427ae942b729d582c6b2d5d19a4b23cfffc5e57bb9  archify/examples/dataflow-product-analytics.html
+e3dc105d03c1c9881160006cdace23cb5d8533803e337caf0ec287c64e775275  archify/examples/deployment-release.lifecycle.json
+d6f13c5e6254ef3522294255a740e7aef78554058cbb29ac15e7e4149568c122  archify/examples/erd-orders-rendered.html
+3bdd77674282009c7c68d588cf8a3c495bc98a3be1b9c45327fd1801a6f83a23  archify/examples/event-stream.dataflow.json
+77d610013a5aab031df739c207b66ebc26e1740371b51da06956ecf06b5e9929  archify/examples/example-rebuild.waterfall.json
+b98354f921ca45842fed235db09fd4f19d94adc16865876f438c0d699d05e1ea  archify/examples/holiday-planning.workflow.json
+630be98449925d2716ecb8439f404b2bff5fe65ba905b0ad0baea6d96890c526  archify/examples/incident-response.workflow.json
+7952d024d3f7605ba28cac10dff1883c6efb57788ba650b26cd1afd87459b042  archify/examples/lifecycle-agent-run.html
+77975293855578923fbbee29f478d9d84002c04d6a7b3e22cd9db8cf3fb414ba  archify/examples/locales/de.json
+ea1af868932eb22761094a4950b769fd0634430fe706fc4ea4335eca7f0529bb  archify/examples/locales/fr.json
+8958a8354ffccce2ce63ac21b3f8a0f131086f532832445a3fe7feff02200397  archify/examples/locales/fr.partial.json
+be8cd15fcd0311521dc8ae1f35bbcf8e33a180e20e5ce94fd0d65dec4e147e6b  archify/examples/locales/it.json
+bb6d66d7e1126c5c622423317a536728820d3fe686be90d0c9cc8f6ca4ff3e67  archify/examples/locales/ja.json
+8e3c6a054183e96465bd882bc23d38eafe19c0484eda5709f4e2b37e132e0731  archify/examples/locales/pt.json
+ea673bf7156d87ac43d754839155a1a145aafa481b5de540e04d1f8d3ec008d3  archify/examples/locales/ru.json
+1777a374647084466f4d7ce3a968004be6ab70ac9cf82459b96bed7c556cdfdd  archify/examples/orders.erd.json
+c1f535b3cc915ddd47ecd7df4e3ef02c441c8c3191daced5cf4422cff8dec95f  archify/examples/payment-incident.timeline.json
+1e99f37b3845d67fa97c9a2ff33109981c23bfdb0d03ba05b7d92944dcdfc61f  archify/examples/payment-platform.tree.json
+98742b997db4782981460e8110e5fba899d8500c92c086aa867c5c62c3b89222  archify/examples/payment-processors.class.json
+afba837f97a041e14687cbe8893523232c4afad7afd922d9b128606d1b3f12c8  archify/examples/payments.class.json
+8a635db9e51a5b1a8d2955b9d66f5b9a450e0a298432ce8f2e2f0be11f372e05  archify/examples/product-analytics.dataflow.json
+610a5614667e8f108bdcf1769c9d7af5c3ce0fb62be3ea50550b10eb752e4bda  archify/examples/production-deployment.architecture.json
+dbd5c174af66296caec372e7214cf4df7158b50a563508e16826b95ab8d1cd6c  archify/examples/release-delivery.workflow.json
+0acc3f1f239d8dae8088538a5b245e5aff0d9c6f68268cfd16b66b3d6a6c9772  archify/examples/sequence-cache-miss-request.html
+93e24ec18c465ed8ffd1d070fbb8a7db73d7510f09d770c869c79b254bd7a893  archify/examples/subscription-billing-rendered.html
+89945699d92b9cc0ab91263cf38a07c350867d260eacd5d8ba1dc835fe2d22ed  archify/examples/subscription-billing.erd.json
+f8e63121681496338e7b10c4110075c957141d88b391eb110888b6f5e0a4b30a  archify/examples/timeline-archify-dev-activity-rendered.html
+b8b33ee1c76992d472edf30ab726974e493ebbe966daacd2051a88ffd77be6ea  archify/examples/timeline-payment-incident-rendered.html
+8e8519d01535924c314d49f28b0f80f5777696ff2d9b411ef7ec28b7389f779f  archify/examples/tree-archify-repository-rendered.html
+f64e8a5ffd3ae82ae6bf6f28cc8f716c0b437c1fa1c3bba74bf7c33e962b7bd3  archify/examples/tree-payment-platform-rendered.html
+a8f9bfc4651b172a4b927fa8365be3dec5a749690d6628d7ffcf7d595ee0e375  archify/examples/waterfall-checkout-request-rendered.html
+735f695685053c6095292647cb80c788e32064bcc411697bed8b12c1c7b0b053  archify/examples/waterfall-example-rebuild-rendered.html
+48b8012b0bfeeaf4fbffac8072cebf820f239010657bcf1cd53621d5298b03dc  archify/examples/web-app-rendered.html
+95e051b27a9e4a3307e194c0f666fca4af51470be7e2228d400ff48aea5b353b  archify/examples/web-app.architecture.json
+6a30f19e88a722c6fab02a6e9d95b64ef109799597fb94509321257754ac3703  archify/examples/workflow-agent-tool-call-rendered.html
+f1b4e5693aca48655da29dd22b31d719057a701fd4c39bc6d426a1ec41f90ecd  archify/locales/README.md
+1e8b43d8ba6d8ae75c2b393b2edb43cac5e142f33cbc2d1a2351e0e8baf9e1aa  archify/locales/en.json
+f2b971994cb9f7091758e605931b4b4959103ed0090916fe281bfb2f2e1e5cc7  archify/locales/es.json
+b7f2be52c61e4ced665ea62bb0670b4c2615a6c706127246a44bbcffdf65f8be  archify/locales/ko.json
+c4d53064cfc2ed8d5e0fd72305bfebce746b4097a32ead87b96cccef69e2f7c7  archify/locales/manifest.json
+83d870452e9ff3459a3cae88be6900d9a98b268e6cfba94b608a7c10f484e485  archify/locales/zh-CN.json
+0db367aec82cf92b08d4335d5ed021480801f7ae79b1e2c1a0c79b27d4eafb2e  archify/locales/zh-TW.json
+0eec02057b8490afca9b093de5ea6e636c7fad2361cd28a04cf2f3e4b6197434  archify/migrations/workflow-v2.mjs
+2cc00572b398dfcbdb078433733e3099c629a8225f8d47c76e7291e903812d05  archify/package.json
+1e93ba15d0782be535251bfb406cf8cc056291d84d77d33ca9dca01df743528f  archify/recipes/scenarios.mjs
+6c90caa232c004fa43b8770c745b83672919deaf8909f2592a3ad5fcd4031953  archify/references/architecture-layout-repair.md
+bcb0f9264fb3b2dff751cbd92e01877564fb3d2f9ab078349ced78282bde4b10  archify/references/authoring-contract.md
+048bc5d1d81a2d5b3f5f55be5f4eb22f0f5f33c14b81ac1a4ce7b7cce7e161a4  archify/references/authoring-defaults.md
+d6e1a6ceafd07e48f27caf01655ea642365a5416ed0543b4022ca62750b58f0f  archify/references/brand-marks.md
+97dc20162c6596bdc77c632c1673bcbe6c3a33004049d4ce1d799f5d1409ae86  archify/references/delivery-contract.md
+c1648fc0c1b85a3a9bfbf3a8919dfa741ff0b5a55ea310d1fcacbf6ee837e139  archify/references/repository-authoring.md
+57750c5c730b1804b6b1ece3af972d47cfe4d06ef7920fba4418c5b09c842b41  archify/references/update-awareness.md
+7d35ef52a8f47e77e8ec827cea7c71219bf1aafa53b5ef72ad4f1e1437f882a4  archify/references/viewer-runtime.md
 f6de99c32436feed3378b0ddef516bb4732ff27a89c543b50635d4d14a15a55a  archify/renderers/architecture/grid.mjs
-c49ba91dd57d78bd2a3a5852ba1cdc8bf6b2afd1d96845ff3b240bdae55c5be0  archify/renderers/architecture/render-architecture.mjs
-18c4f86ba62fcee371d9fe38094625b3a68cc76231c36ab8c8124acb4c1ffa42  archify/renderers/dataflow/README.md
-89b173216c638017baa24e90a6c42ab9ce13d7e43eb2371aa871109563a5a1a4  archify/renderers/dataflow/render-dataflow.mjs
-ec9b27ebf4c6a8fa675f11995c47753d3283423bac09980a4cd476d6bae9a9f8  archify/renderers/lifecycle/README.md
-ac37f1afed1a1d9b70bcae3113edb1d945b0699e11efaeda9e35f03ba3cb56cf  archify/renderers/lifecycle/render-lifecycle.mjs
-a442335dcf44b1587d3ad88809e31b001a4fafdf7a134040e8b1927455af4206  archify/renderers/sequence/README.md
-4b855ca424a4e4d55c89d1c22a9c3b71b2176d969a8a18b6c52dae3517b1e71a  archify/renderers/sequence/render-sequence.mjs
-0d221a5368b61d09ea4f21d14c6c31b2fea48b3b49edb205021261a068c271a8  archify/renderers/shared/cli.mjs
-27ac252f47abbda260643f7400c126bab840aca5c050005d721ae32b87744136  archify/renderers/shared/diagnostics.mjs
+3a0066a987d8ad20121d0f7261d8bcfd3659443a335ea5e47938e7779ae12d31  archify/renderers/architecture/labels.mjs
+50bf6f0748446ba99c4236e29e2e39755d5a2b8894fb598f104f7b3107063ca3  archify/renderers/architecture/render-architecture.mjs
+908ddaf85caaa2d5d4a17c0544489ad9500614914c64a1d2ee2b96c4cc9ad4b3  archify/renderers/architecture/routing.mjs
+33074161e184a98dbb2b65d0ee308779b216a3c97dda4dfaa2bd6e2fb2e9f526  archify/renderers/class/README.md
+e4943c1e91062aba7c72715e4887165f03908de03a1c99dc71f296bb0d1214cf  archify/renderers/class/render-class.mjs
+3e9c8368e5aab1e686817745628d6da6e584b5009973ae1ee8e4fbea1f324ba5  archify/renderers/dataflow/README.md
+e27a9b69876927b7285ce14569d22b92e32e8173fd953184ac13a8a02408e257  archify/renderers/dataflow/dataflow-compiler.mjs
+8d1fd73d0d6055f6c551dcbc7ea3b01e4b801216c3101b2246e4172a564beea8  archify/renderers/dataflow/joint-label-routing.mjs
+187af128f09630e512931b22bb301115d2a4d72c925cf02d3fc4736fb1846cb9  archify/renderers/dataflow/label-capacity.mjs
+befc8bdacd86c07dd0b65a4b9635632a1246dd8dae7cb98dcf6d31dde361da2c  archify/renderers/dataflow/render-dataflow.mjs
+ebced574d26695b7430b3a20ce345473eb0e39da2356c2b0104817036730383e  archify/renderers/erd/README.md
+1aa4644d8ef13fdebe5adf48377c0755222a0288f6cc487faf052d7957a78a32  archify/renderers/erd/grid.mjs
+887cda4709e7905c48a375927a94f3b40210f74661e9609ca1d965e982e5f37a  archify/renderers/erd/render-erd.mjs
+42aa4d37721661d1f59babb7e6467d910c7569d8573add2679c04942f5ebd72a  archify/renderers/lifecycle/README.md
+b700af01fa3848d7dfdf492b9efaccc7b384e6ad509a75bf9ac9af2038e4efc6  archify/renderers/lifecycle/render-lifecycle.mjs
+d93cdf05140ae60f8a5df495da5cd5c9dc492f2338760c53626f3943454d00b3  archify/renderers/sequence/README.md
+249689c4de5636bf7d746a04b3369f5576b91f76ea533502b313f943da4a8a95  archify/renderers/sequence/render-sequence.mjs
+f804d66d1801ac2dadc9d0a4c334645cfbb7a8cd1a7de112ddfb952c056a580b  archify/renderers/shared/atomic-output.mjs
+3f3b63cd9cfd242968a739ca703291d7788567ec5699b5e7d6a11a4079e15917  archify/renderers/shared/automatic-labels.mjs
+87436fa956c98dc9bbabf826d5f254587c1b3e7a829883f4098e04c62f4b5345  archify/renderers/shared/brand-marks.mjs
+9df5e6efb3dddc50b72d0daf3ca9d2b611bab31c5f1076f6769bd94999c5688c  archify/renderers/shared/cli.mjs
+55ee7aba702d7883a08b6e54b39b00d5a17918a0c6bcf0c0fea19034f4de8990  archify/renderers/shared/desktop-readability.mjs
+4635119e65f77f28f0a81c038642c7d7de318ba9400073f37decd59df258dcd6  archify/renderers/shared/diagnostics.mjs
 7e99f9d5423f66cc9ab6224da56dc2d5aa6c6faec29178034794e9db6b5b2889  archify/renderers/shared/engineering-profiles.mjs
-31c7c10cf487f9cab67c1886969a02675a644e1513461e62d366fb78ea87cb28  archify/renderers/shared/generated-validators.mjs
-71e5ee761fced528afa613821e4d4ad47699e1067b83439a1152617536b4cf23  archify/renderers/shared/geometry.mjs
-44c2f74a20e483dd37dae6791ede39284ce3bac1a2a13872d2912999e8504df5  archify/renderers/shared/layout-report.mjs
-d195da3f1c5fceaf09d994335de7e95b891d6a53147f763be7c5224f26036887  archify/renderers/shared/legend.mjs
-9c61692cf9debc99f5cb86e0df8c474d0665921345fecdfc13ded3828c94f0a8  archify/renderers/shared/output-path.mjs
-e36c109c84b338ea77d2ae74e9fa9ffe4317e7780a2be8d4d78e588ddb387677  archify/renderers/shared/repository-evidence.mjs
-35b6ef2c64d88c1ea4e5aab2af7c4e8a2c2e1be62db71263787d39a9797e7dea  archify/renderers/shared/text-fit.mjs
-c99f5f7744031413cc289dd2628ad0ff514ba3a8ac602da24b8c8ef9e0c63e0c  archify/renderers/shared/utils.mjs
-7460d7fcbcdf710649256c5e96142ae26d807a655d3296ee8caf7f5e158622cc  archify/renderers/shared/validator.mjs
-dea221f672ce8cc2d8c7bdd850ee10d75cc7289915d3ab58ce2fdedf1a145592  archify/renderers/workflow/README.md
-4f8e16ca648b485486ce4ff7c7d0dba4ec5af4a2d0ec8c9f41c7208ae9baba68  archify/renderers/workflow/render-workflow.mjs
-06fc96a26cb8b25dcd127698dd623564f7a95e5548e55c53e4fc86aff307e78b  archify/schemas/README.md
-2f2fad88bed1b408a9fd65d62f94f86c43eeefa2e82ff11edc8a2a5f20ac1a07  archify/schemas/architecture.schema.json
-7cbd0cfff3715fb89a50c75188c7893db853f7f27a821522142717300da1c3e4  archify/schemas/common.schema.json
-436a03b806061f623fbe9913a1476e61c8af2273047620bc91a823249bb15356  archify/schemas/dataflow.schema.json
-3dc62d8d382e1495c5b43b5a4570716bd57e8e9e02f46b447ba37896b0cf917c  archify/schemas/lifecycle.schema.json
-d952415061ca1bc408ebf24dd68495abe1fb4e86e1c0bc9733f539c243caafc8  archify/schemas/sequence.schema.json
-4c0d90c4216b8c0fb456dd0912048d00ecc363b6c0cb53faa2837c3d729b2608  archify/schemas/workflow.schema.json
-aec2aa7e56993707248307f596bfcce9a5adbb0af1593f2d2ed5a309de8cd8da  archify/scripts/check-render-output.mjs
-a5f5f67d3cd4675b16fa620043a5463f3c15aad89afb1b0c7cf42cf35e883f9a  archify/scripts/generate-validators.mjs
-a173a053fb26c0ac3cd72eb9b4e50411e67ca8c50bec57f05d4ca8ba79db2c0b  archify/scripts/render-examples.mjs
-574f67a534057df75d968c96c8bf4c6d1ae8a635e1bb6d93d665c0fb24ff6557  archify/test/adaptive-reader-layout.test.mjs
-74f2bed95bbd660cd7ea51a9bc40d526cd82d8aca07bbf2ae0c8a155d813f8bf  archify/test/animation.test.mjs
-6b1bbcda1540256a5836d9cf2697fabcf793adc8150dc95be94b838c8b38fbf9  archify/test/architecture-delta.test.mjs
-b243c1568c8470a28cfbebc6b9db4dfe0302e7f37f5c451ccffec53de23fd01b  archify/test/authored-reachability.test.mjs
-3d10473045b4e253e90ec8dd862133634dce971d0f09408b4debd08604f8012a  archify/test/authoring-safety-contract.test.mjs
-c067dcb02a57576ab282ebb6203c3056d9211c15300c413f0a209f4eee4044f5  archify/test/automatic-port-spread.test.mjs
-c15569c4d0c3c15d38ae9f0364e1ded90d1a610833f00f21d73f52120ce905b0  archify/test/chapter-delta-preview.test.mjs
-83afb2aef107bceaeec9749b35440be46ec160d5e115dd73cba6c4efc4f826d0  archify/test/chapter-handoff.test.mjs
-968515a2bec290f820bbdebe67e1388f7951f7ff8392b2a93244983ec865f5a2  archify/test/chapter-rail.test.mjs
-35f3fd3532b1341ac9c6ceab3d855e63abc7160b95502aa3c75c64e1cb3bec6f  archify/test/cli.test.mjs
-2ba9ed1daf4df30e985b608609c4a6524cbbbe884d02ca1bf225288d7762ac77  archify/test/community-proof-intake.test.mjs
-eda54bcffd77ffc238f1c45cf8094a203697a44a7bb4587196ee2c8cb59124b6  archify/test/cursor-onboarding.test.mjs
-b7cdbd22d594c627a4d8b0b6403e403a0599df9229c561c9bb435ce200ce1344  archify/test/degraded.test.mjs
-1da27d15e987bc74a8a3db98e5db5ad8da3356aceffc9f094fb16ce3b864a042  archify/test/delivery-contract.test.mjs
-7b3c430a9849c8f5622c1486ac01dd413da1cf2c41735107680158fe5ef87d55  archify/test/diagram-guide.test.mjs
-d5419dc45da1927a2cac1b998fdd5d1bbdbc68369ccb17cffaf4d98a90e0e242  archify/test/engineering-profile.test.mjs
-212f64d7880473e534ae16a607b73cc76d183ec82480666fefee5b10a7b4f94e  archify/test/finder.test.mjs
-eeda6e3ab71411724a1464819bbf0df9e88de7e2dd5f5731a93ec3709e570bc0  archify/test/gallery.test.mjs
-d7c09443154ae5a7a030ab91857fcee1e6a302c4e6a8dd95e9669585d82f87b9  archify/test/generate-validators.test.mjs
-4f0507b0ccafb188b470f6e69a993ac506c1716bc653763be66f3bd113ba8b26  archify/test/geometry.test.mjs
-ad0a1e34a43d4ab07a97fbca5c2d2358162a240fabda3a69d419bce6631ea6b7  archify/test/golden.mjs
-ebf1cd47535148c43b578eb10df0260f0f55cb6811d06c01375fbb408bf2cf6b  archify/test/grid.test.mjs
-cb7b40ffbca2a901b59e9bb0a2318e53d654d5caf7e9010b88580b1e26002043  archify/test/guide-page.test.mjs
-8c0d8db6ba3a79d902fdb89d77c75518b232a52153794ec70e28056d3d2e2b68  archify/test/guide.test.mjs
-dad2d7e93ce550657a039bb9a8fec6d248f3c568f1fd5d657945314ed4dc7f06  archify/test/guided-views.test.mjs
-c5dec206aa9a45a57c0ea20b369d9c7332506d1d3fbef228ce43ca2d50e08e33  archify/test/intent-trace.test.mjs
-b8bdaf3f2494394c1ae4d300567ecef03a834ea1186ab6b93419d15c8b14979e  archify/test/landing.test.mjs
-ef503bdc8c3eb99fcfab6e0352c28b7d9499c7eefe76352b472bebad0867a852  archify/test/layout-rules.test.mjs
-b60d1587d6e60987f796223f4ed87842590616c1c6544cce3f02007e1867241d  archify/test/legend-contract.test.mjs
-02609189ef79e6b44f9b5b6c1a5c1716886201714fb16212eeb038ab12785b8c  archify/test/motion-governor.test.mjs
-fab9d65f5ed0844182b0ee62ced9412e364179960ef65fee020b0d23d977eb55  archify/test/open-artifact.test.mjs
-4927b007f21a926b638ce33704450c0b3515f649c137bddfa6fdbd938fe158e6  archify/test/ordinary-model-floor.test.mjs
-ad4bf9b4256d2c4cf10721a75ae61372ae6d13a6e1bea2dd46fd2074c0cafb9f  archify/test/output-path.test.mjs
-9c0fd988a3123762218093ddb8b8189998272318695347ed6fb924cec490280a  archify/test/presentation.test.mjs
-92c45df6deac7ccefcb8c1c38ad0f0ba7f42ddd737e5ef0baa9d15aa57ef1719  archify/test/preset-tryon.test.mjs
-170e7576bb8bb18fa90538759b07111e03d840d76a46c419489c26d58250b95e  archify/test/preview-contract.test.mjs
-26fcd349cd3f97d6bc79831b0c803886c196363a7f9ca9ad1ebcac54b8cbceb2  archify/test/preview.test.mjs
-f393b9935bb9d915e301a1bf974b67faa72161a2717d6b65077e1060280e9af2  archify/test/proof-aperture.test.mjs
-d10c7241364fbf7bd9c0b31a19120ed430cb5aad12b03eb2c5985fb973ae9870  archify/test/reach-share-card.test.mjs
-c0cff7ac097b381a38d01d55756e43a5badb0ba9f8c9b44d22df99c17cf3383d  archify/test/readme-showcase.test.mjs
-564675919c22b00bd4621dc64e4a59ec22ace29d7d08233447c8ba8cb7e54354  archify/test/real-repository-proof.test.mjs
-573aa835cc072b37246d0c1464a866ddb9a340abc8609354d34d3b714aab6ee0  archify/test/relationship-direct-explorer.test.mjs
-6a9cb990d250b4cc98d11cab2cd66db094d75293bb387e7396f8de9a5982a97d  archify/test/relationship-lens.test.mjs
-6b08ecc09f22da5789b15a2b5ac57b05d6e2e9325dff3c992cb73076010f0386  archify/test/relationship-permalink.test.mjs
-c15ac8f463ca7978dd48c18698b8700ae408ae05a9eebfd334425d74fad96c18  archify/test/relationship-pulse.test.mjs
-261333e256394ada3beecda8df429f3c5137f858e06cb00807840dcb4283e808  archify/test/release-identity.test.mjs
-9edf46263f1d010a40d8e1987b0af1c19dfc2fed050c80c5246ef69707dd9f5d  archify/test/release-package-gates.test.mjs
-85b6f69159295fa9f7e47418a2c3e881636d72c4dbe3f73ec5d8ba5f828885d8  archify/test/render-output-checks.test.mjs
-277b4c881c00be8ce478de6909844be20e196af9b13e0798610a888d032119f4  archify/test/repair-receipt.test.mjs
-f98e6cbcb0495a412d5d895c95c9c73c6e197ddb4c17d1011267e7940fb3532b  archify/test/repository-evidence.test.mjs
-baf4a0ec8ca67e781840136d57c18e7580bc9edede8763d2d124441698bfc45f  archify/test/route-journey.test.mjs
-71ea0d2365bfcb492fd84dd4e3945d96dfe0115eb2614921ee738805a661158e  archify/test/route-probe.test.mjs
-13a644ee37a39c098dcaa2804c230a9c63653627798f125f5d2a438ea0d61b18  archify/test/route-share-card.test.mjs
-1243637d25754827f981dd4b3099d8dbf95d7b6d8a3ba66deda59dfdd9627a64  archify/test/semantic-camera.test.mjs
-305dad25e06dc01825f01cb6889411cc7a6db36ceaac624f7bc6c6136ce53a76  archify/test/semantic-flow.test.mjs
-c9d8b6543c4ea4954cfecaf5c234ef075400056c0084004ac11d1925915788ef  archify/test/semantic-legend-gateway.test.mjs
-d7a5532c3df8fa2e95d5b5d7b3648a8e95b6974ab379846a6e15e12b89c8795b  archify/test/semantic-lens.test.mjs
-7a133e5e95abedfa0820aff7e98c076e50191ed9272d4b6859a025c969446617  archify/test/semantic-passport.test.mjs
-d96c3065be592136050d47d4d690f795aab4e20b0f243dfd713b192914623de8  archify/test/semantic-radar.test.mjs
-7b0106565104340c1809694098a53b1d4640cc50e8055735c055e0656cba6288  archify/test/semantic-zoom.test.mjs
-e3de2b0837390d31481c2d0533aed467de0263439b494843eff992060e5b0dd6  archify/test/sequence-column-fit.test.mjs
-e079d492252d77612439fc055a6d79ef545829b12539aefac496f796ac90165e  archify/test/settled-flow.test.mjs
-c6c8559c55aba4f6233c837caa2cadec57b131d6bd10ef5148359c73863b1596  archify/test/share-card-export.test.mjs
-cdce3c00385ae3964395e17a6c804072cc72991ef3345f1c561af3c33cb9a4e6  archify/test/skill-metadata.test.mjs
-2b30cb4d67924c3413bea387672a4fdcf8a8e2e98fffc207763ab6619c7246b1  archify/test/start-page.test.mjs
-6b6c0ab5b396e8a608d337cd8e351d4118a75678a5d90620943249b1bc53d7b0  archify/test/story-beat-navigator.test.mjs
-05143cd9c5f28ac5041fcb46daddf830ac171c0bf72335a8f9623a14916bf8bc  archify/test/story-carrier.test.mjs
-be1283b9cc53fd86d42e56322970b78194e5817edc99e01d81dcfe9cb069f1a2  archify/test/story-director-strip.test.mjs
-1b7b660dc322da296b4374e0af0e63e69ff3c6aa83de153142c3bc743582e1ff  archify/test/story-follow-camera.test.mjs
-4136e9b4e296048e422f44d64e3d10f9d81884d1a6f099d5eb0c33c4c1e5d8dd  archify/test/story-horizon.test.mjs
-7cab7c13d68abc60de25aa112a6ba5e6034dc4a9b5c81cdec388e83e0d18429d  archify/test/story-moment-link.test.mjs
-b734d038ca09136f46b5b514d1f19b8ca8bfa3377839d27cbcc338179c7da210  archify/test/story-shelf.test.mjs
-9ec4a06fcd365cc7a4ecc31927a004d98a62bab0eb6f3dd9feefa4e9f7ae009b  archify/test/story-trail.test.mjs
-560db4791626da4d3dabcdc100b10eef1de22ad5bb83236cf4aa8195e3cccc36  archify/test/toolbar-polish.test.mjs
-fcec9a325d6028078bc3c47b3748e4202e677c469b6b8ea466bc2a82193fe234  archify/test/v1-compatibility.test.mjs
-ceaa480318366127a363bd184cc8a2869ecb201d8405868d518d2d1cd49340fa  archify/test/visual-check.test.mjs
-2933354f291325f55b0915cb558cb7770bd1bf40512aa3a256d14181b7e0929b  archify/test/webm-artifact.smoke.mjs
-b2264f4b2eff23e69b3dc79922062e942fc64ed0bec4f939fa53dda3cacd82d6  archify/test/fixtures/v1-baseline/agent-run.lifecycle.json
-4903056b3634e02cce9fd7c71b61fb27e6db455480c8d776a7005346b3afc564  archify/test/fixtures/v1-baseline/agent-tool-call.workflow.json
-047914c4dc4ed753b6b9f100ebaf6e7f15f9b72af0913e3a8e7a223bdef39aaa  archify/test/fixtures/v1-baseline/cache-miss-request.sequence.json
-6da9959f729d81c4cdf8895fb6611080ff0368c3cde48b00b0081495a006140d  archify/test/fixtures/v1-baseline/product-analytics.dataflow.json
-5fb15d0e0f7e5ed3a1a3f2e7ee406fb50aae126818c58db24f77236b07dd63f6  archify/test/fixtures/v1-baseline/web-app.architecture.json
+0f157d229c12df6f53763a3b88684baa5803a52484c49c4d34ec40b8743beea2  archify/renderers/shared/generated-brand-marks.mjs
+c57ab36392b7ce10a293ea1d75de7d675f4f8d8c5717845c3018fb7eda01b87b  archify/renderers/shared/generated-validators.mjs
+818f6c000595f11a915cce2f73b5deb1a82ececf6c578a22bee70099988ea7a5  archify/renderers/shared/geometry.mjs
+1e6601157babd70c455dcddc93868f4665e56e7e723708d95dcc791dd1b636b9  archify/renderers/shared/i18n.mjs
+979da7226c5080cb16fb352236d5705cc79c06c15d0a3550b95963af02c63b6e  archify/renderers/shared/layout-report.mjs
+c33fcb54cc5aa60d788154036daa165f85d2e06d28aa9f1d4a73705fa278de70  archify/renderers/shared/legend.mjs
+80a0d473b936ee198e73cb89addd43a6344fb81da94f9fc88c53ae759cbf748d  archify/renderers/shared/node-card-style.mjs
+7422139101abd93493918898a97bed06f2212bfd411d3514cd229b6d57a3797e  archify/renderers/shared/output-path.mjs
+fb94515f8cd4b6b28799a7367745235822e2169534b8200791600ce7c3953a0e  archify/renderers/shared/owned-temp-directory.mjs
+4ef002af9061c06634a07de6d199fd7d13e6c50561c792fd018118bf3e065f52  archify/renderers/shared/path-semantics.mjs
+26130cbcdae9b9f082486aeb5feec9c5fe57905d2ed8e30c8081b9710e2e8ac3  archify/renderers/shared/portable-path.mjs
+8b3d778afb014ace93371b362b49dafb9e6703c4f9b1bb7c6fb11dad966b5105  archify/renderers/shared/repository-evidence.mjs
+344044d8240a093919894bd63278652bd01b3717c5b49fb174a6f77bea28b839  archify/renderers/shared/repository-location.mjs
+c9cb9aae3a1623667f0490ba755bbc0ba57e5957e7ea56379d872eb1f2bb2090  archify/renderers/shared/route-quality.mjs
+c23cac8bcc265a74e2920c58d0968d1ffa06c1328bdd9cfd07755d4df2f22974  archify/renderers/shared/sidecar-path.mjs
+e728bf6a729972f95ae09e368ea370490d10ff94d49debe2fab2e9bac923ee1a  archify/renderers/shared/spatial-grid.mjs
+4c498ef5ba090a2d658c2ce3d80145f4cc63da9462f547b621206250096957c5  archify/renderers/shared/svg-path-analysis.mjs
+ebd499072ef4fe31c9aabf45a01c204a9c2c142d45f087c3240673f90f477038  archify/renderers/shared/text-fit.mjs
+d0e8692b8acdc6993578c5d4aeb67065effdf5bf4cf2cd127bf561c677af38f5  archify/renderers/shared/utils.mjs
+f5cf5b9aa3623a456e9a07f0c5f08fe09a0a67d3ba356e32937c3287c75c3bc9  archify/renderers/shared/validator.mjs
+43d13baa7b56ddbad8842224d025bc0c4d1efb39a9091b5ae2f8ba8ad7d45601  archify/renderers/timeline/README.md
+71cbd3e61f73013308bbb1ae2a0f33419503492c3b44127458a29b4703443766  archify/renderers/timeline/render-timeline.mjs
+c1afbcb94e026910987199776d76896b58b7947db2f94d90d1da608e44ca9a35  archify/renderers/tree/README.md
+4e2ba7d4a3f567760c3801e7439bd18fa28acfe51e581479bd56ad549e240b68  archify/renderers/tree/render-tree.mjs
+13afed9d91d02bdabea0b920c23cd6ee851a42e53d30e80042e2aee4f845ecd0  archify/renderers/waterfall/README.md
+49d64cf52bd6955fb955ccb6b2cd76e31726ab18833626b3194790020ab1dd28  archify/renderers/waterfall/render-waterfall.mjs
+47764099a6b0bd02804f4415b99dc860d7fd3dec01120ca41171ca91cb47f868  archify/renderers/workflow/README.md
+304df0df006c44ab01ad534f34cb48cbe163f7ed2e7e2e8490dfee88827d3aba  archify/renderers/workflow/render-workflow.mjs
+a84fa7570341166e9190892b4ab9bd5fd1ac63290cc9ec5a48dcaaf8a4183a3f  archify/renderers/workflow/workflow-compiler.mjs
+472d662c1b94517d57a9a80ac8d8ab1b49db7292e12b88c6476de532e6a1aafa  archify/renderers/workflow/workflow-migration-geometry.mjs
+3ee6e83c3a5279e1af2b06db39fd39c3348264b2daa159a94cda3e1d8de5ed7c  archify/renderers/workflow/workflow-placement-repair.mjs
+0e3d14c0feeb631938960b8a1348133536c3445d8f967fb35adcb7d3981451e6  archify/schemas/README.md
+aef992b585a18a4016b8207254fe43a6227b0d45322a1ba95e0f69a80fc8f8c1  archify/schemas/architecture.schema.json
+0ecfb9948563166c4f23df784d618ddd93f003ee61402a9349c5f63b0284ff2a  archify/schemas/class.schema.json
+3bb6bde1122ebc1d47f73cf12400015baa0c7e5650e5780b0e89773d7ead4def  archify/schemas/common.schema.json
+f01b2faafa5fd6e300f6b5045eeca70f70226552411180442d6e528dd45172f1  archify/schemas/dataflow.schema.json
+83aef0349f3cd415a00da4ed30c7864056dc9599627e004e6b7168ad4149ebc8  archify/schemas/erd.schema.json
+151befae29a68833ba26e7848769e89ab9dc71fc5bba234a91a62307338cfa49  archify/schemas/lifecycle.schema.json
+97af565f8b6d8fbd4b5be40ddb52f4943accab2cf4f386d695e800d367dd4f89  archify/schemas/sequence.schema.json
+4a657251d454bde44ef4697c960fe7503eeb4db4e50f9540c7e2d54046dd0769  archify/schemas/timeline.schema.json
+65c794a1f522ce336afe787bd59adb63a81f57a5bba3ac266f2bae5c3a07b8c3  archify/schemas/tree.schema.json
+7c3000534b491ce86b96ace528e9bd5a453ba3d14294a724da3ece4bd83b51f6  archify/schemas/waterfall.schema.json
+e13a1ce3b841376c8c6f6b9cb8152f8c0c7d70a77a2960fecdfe9025de83dc25  archify/schemas/workflow.schema.json
+89b977928a525006eb4ffeb07f3b7607a31cd850c3c8cb47fa85e276f3b5c093  archify/scripts/check-render-output.mjs
+899e275fc63aa8cc7d324c112dfcc23bae0a6079cdbde97b9d7718a6e4bbd047  archify/scripts/check-update.mjs
+ec231c992ab9b548c735698f209cb350d4b137aad2a5e8cb1374e692b6b38064  archify/scripts/delivery-update-child.mjs
+c2c99c4153cf21f0526cf3f041c1d81716017be182d404173f8961fa494e8c8c  archify/scripts/render-examples.mjs
+7c5d34c5fa2e08fcd0b42e33a0f3b4685fcecf3ac88f1ed820528df8fdc46cbc  archify/scripts/update-contract.mjs
+654ba03f9d19229b2646dc74283b205fc4403b6205b7c56f62bd4747a3ffdfe4  archify/skill-release.json
 2c96a6bef97ac8c2e5e12e48e89d361aee922763a56084e5c6f89dee47eac8a3  examples/archify-repo-grid.architecture.json
-aeeb56944d8cef53eb26ddf027c219fbe0d3e36bd079ae3229ff1b7e29881eec  examples/archify-repo-grid.html
+87038eef4e6980ff820c8ad31972cc0d517b0dc0de019793311afb0e8506b53c  examples/archify-repo-grid.html
 548ccc1874305edac52f6cca2a3291078d049ae32f38d3679ada35ebe4f56261  examples/archify-repo.architecture.json
-bd782ab029503377b6aab7d192a460d95a12ff1337fc0d4cab3de780c2e93f2e  examples/archify-repo.html
-b1a96022f0d8396bc9219230b1d41aad1e9ef1841ee69aad004adede7cb7fae3  examples/checkout-platform-delta.html
-04113cfb48c4372fe79b06837678e94f1326e0cbbc212d8fc031b8b2f7053f17  examples/checkout-platform-delta.receipt.json
-3c30dd770f181415c11ec0b0526d86991af2177fb790182ecb7bf47d0c798cd7  examples/dataflow-product-analytics.html
-9ef047c4a029fa4649d84a0c299552a5d02f31ac0e3a51b7187b6696f33ed718  examples/lifecycle-agent-run.html
+eca18d8bc36e400dfa923d2cb37e94908a565c374b01e333344f4d17a54e674c  examples/archify-repo.html
+0c85f3f4704fe6e610940a5e480f76535fa5e76dd363515b56b4dd5889532a77  examples/checkout-platform-delta.html
+76ce00118276e61ce86b0053fb95dac0f3c3d30671918d3924e5bedc9809e621  examples/checkout-platform-delta.receipt.json
+12240a8db8fdf6bb91e92dc71916c1dcef4873e7d3b1ba351b8bc00d9489d48b  examples/class-payment-processors-rendered.html
+5b11c66ccaef1177e69ea28e8a04ee9d8ba5964e7476e1a1e57ce1fe36b4c53c  examples/class-payments-rendered.html
+8577ad3f6800a87c8b4074427ae942b729d582c6b2d5d19a4b23cfffc5e57bb9  examples/dataflow-product-analytics.html
+d6f13c5e6254ef3522294255a740e7aef78554058cbb29ac15e7e4149568c122  examples/erd-orders-rendered.html
+7952d024d3f7605ba28cac10dff1883c6efb57788ba650b26cd1afd87459b042  examples/lifecycle-agent-run.html
 26d430096a2de84afd064487bc1f1c52160b32dbacd702786a0a60d0b26d65fc  examples/maka-architecture.architecture.json
-6d11be0c1664ec7cde6b5a3cdc07a6f046666c7ced4c03003df4cd35df4fa601  examples/maka-architecture.html
-738d651b8c3f3ff8b5b5298834cbd8b7acda5f46a456c5be031647cbc6eb2216  examples/sequence-cache-miss-request.html
-be9addb4bef674aba743b4d7861ad18851545eb9f690b674235dbe00e7b18f73  examples/sequence-cache-miss.html
-b1753910784abc7e37952868051861c2c90d953aeb80342ebb59febdeec87612  examples/web-app-rendered.html
-b1753910784abc7e37952868051861c2c90d953aeb80342ebb59febdeec87612  examples/web-app.html
-a7a3b2836f7f5795173db40527a9d2df1c53c99ac3a08049617ccef3072629c0  examples/workflow-agent-tool-call-rendered.html
-88476501a0f9fca79302264fd54dc1f742096b136bfd9667c320fc9fc32533b3  examples/workflow-agent-tool-call.html
+a7edd1fd15a1267509d314a6c48379c3e8f9d7985e324ee5aecdf136fa8af962  examples/maka-architecture.html
+2fc128ddf096b158dd2a80aa91fd8bbe4475f3ef1d00d6967f56aee8e3fde17e  examples/rag-pipeline.architecture.json
+bc58b145121968c9e67c41d2512bf71c4ab2fcd0f62374894cfb76a1879a436a  examples/rag-pipeline.html
+0acc3f1f239d8dae8088538a5b245e5aff0d9c6f68268cfd16b66b3d6a6c9772  examples/sequence-cache-miss-request.html
+8b99dd22f4783d3fc9b2eea83e8a0b160f1d31352207ef289d8d7f44db995e93  examples/sequence-cache-miss.html
+93e24ec18c465ed8ffd1d070fbb8a7db73d7510f09d770c869c79b254bd7a893  examples/subscription-billing-rendered.html
+f8e63121681496338e7b10c4110075c957141d88b391eb110888b6f5e0a4b30a  examples/timeline-archify-dev-activity-rendered.html
+b8b33ee1c76992d472edf30ab726974e493ebbe966daacd2051a88ffd77be6ea  examples/timeline-payment-incident-rendered.html
+8e8519d01535924c314d49f28b0f80f5777696ff2d9b411ef7ec28b7389f779f  examples/tree-archify-repository-rendered.html
+f64e8a5ffd3ae82ae6bf6f28cc8f716c0b437c1fa1c3bba74bf7c33e962b7bd3  examples/tree-payment-platform-rendered.html
+a8f9bfc4651b172a4b927fa8365be3dec5a749690d6628d7ffcf7d595ee0e375  examples/waterfall-checkout-request-rendered.html
+735f695685053c6095292647cb80c788e32064bcc411697bed8b12c1c7b0b053  examples/waterfall-example-rebuild-rendered.html
+48b8012b0bfeeaf4fbffac8072cebf820f239010657bcf1cd53621d5298b03dc  examples/web-app-rendered.html
+48b8012b0bfeeaf4fbffac8072cebf820f239010657bcf1cd53621d5298b03dc  examples/web-app.html
+6a30f19e88a722c6fab02a6e9d95b64ef109799597fb94509321257754ac3703  examples/workflow-agent-tool-call-rendered.html
+1b55528f8ca5e7f8a43a67735cda5d6a55f3f255087fd5d2a113fc217dceb3e4  examples/workflow-agent-tool-call.html
 ```
 
 验证命令（任选其一）：
@@ -206,17 +246,16 @@ git ls-files -z archify examples | xargs -0 $(hashcmd) | sort
 
 # 2) 与上游钉住的 commit 全树比对（需要 git）
 git clone --no-checkout https://github.com/tt-a1i/archify /tmp/archify-upstream
-git -C /tmp/archify-upstream checkout fc6e8aca1829a02af0f0efdc193a87c3754d373c
+git -C /tmp/archify-upstream checkout 1c2b42d660e4a7571813fb43839c79e3e9ca7720
 diff -r /tmp/archify-upstream/archify ./archify && echo "archify/ identical"
 diff -r /tmp/archify-upstream/examples ./examples && echo "examples/ identical"
 
 # 3) 与上游官方 DSH tarball 的 skills/archify 比对
-#    tarball 不含 test/、generate-validators.mjs 与 package-lock.json，且其
-#    package.json 是 npm 发布的精简版（无 scripts / devDependencies）——
-#    diff 时一并无视这五个路径。用 -x（macOS/BSD 与 GNU diff 都支持）而非 --exclude=。
-curl -sL https://registry.npmjs.org/@tt-a1i/archify-dsh/-/archify-dsh-0.1.0.tgz | tar xz -C /tmp
-diff -r -x test -x generate-validators.mjs -x package.json -x package-lock.json -x node_modules /tmp/package/skills/archify ./archify \
-  && echo "skills/archify identical (modulo tarball exclusions)"
+#    该 tarball 打包的是技能 3.0.1（比本移植旧一版，缺 erd/class/tree/timeline/waterfall
+#    与 locales/brand-marks/migrations），只适合比对未变动的部分；
+#    其 package.json 是 npm 发布的精简版（无 scripts / devDependencies）。
+curl -sL https://registry.npmjs.org/@tt-a1i/archify-dsh/-/archify-dsh-1.0.0.tgz | tar xz -C /tmp
+diff -r -x package.json -x package-lock.json -x node_modules /tmp/package/skills/archify ./archify
 ```
 
 `test/zero-regression.test.mjs` 会在每次 `npm test` 时重算本清单并逐条比对，漂移即失败。
