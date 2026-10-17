@@ -11,8 +11,12 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const integrationRoot = path.resolve(here, '..');
 const repoRoot = integrationRoot;
 const PACKAGE_NAME = 'dsh-archify';
-const PACKAGE_VERSION = '0.1.0';
-const DSH_SPEC = '@deepseek-ai/dsh@0.1.0-rc.6';
+const PACKAGE_VERSION = JSON.parse(
+  fs.readFileSync(path.join(integrationRoot, 'package.json'), 'utf8'),
+).version;
+// Target runtime for the acceptance probe. Override for a different release:
+// `DSH_SPEC=@deepseek-ai/dsh@<version> node scripts/distribution-acceptance.mjs`.
+const DSH_SPEC = process.env.DSH_SPEC || '@deepseek-ai/dsh@0.2.1-alpha.5';
 const PROFILE = 'dsh-archify-acceptance';
 const DSH_RUNTIME_INSTALL_TIMEOUT = process.platform === 'win32' ? 600_000 : 300_000;
 const PLUGIN_MUTATION_TIMEOUT = 180_000;
@@ -117,7 +121,7 @@ function waitForProbe(child, file, timeoutMs) {
 }
 
 const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'dsh-archify-acceptance-'));
-const tarball = path.join(scratch, 'dsh-archify-0.1.0.tgz');
+const tarball = path.join(scratch, `dsh-archify-${PACKAGE_VERSION}.tgz`);
 const dshHome = path.join(scratch, 'dsh-home');
 const agentsHome = path.join(scratch, 'agents-home');
 const dshRuntime = path.join(scratch, 'dsh-runtime');

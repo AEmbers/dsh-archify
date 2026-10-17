@@ -17,9 +17,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-/** True when `relative` (posix, under the skill root) must not ship. */
+/** True when `relative` (posix or native, under the skill root) must not ship. */
 export function excludeFromCleanStaging(relative) {
-  const parts = relative.split(path.sep);
+  const parts = relative.split(/[\\/]/);
   if (parts.includes('node_modules')) return true;
   if (parts.includes('test')) return true;
   if (parts.includes('.DS_Store')) return true;

@@ -36,21 +36,23 @@
 ## 📦 安装
 
 ```bash
-dsh plugin --profile <你的 profile> add github:GongYuanCaiJi/dsh-archify
+dsh plugin --profile <你的 profile> add github:AEmbers/dsh-archify
 ```
 
-安装时会通过 `prepare` 脚本把 `archify/` 暂存为 `skills/`。若 pnpm 拦下构建步骤，在 profile
-的 `pnpm-workspace.yaml` 里把本包加进 `allowBuilds`，再重跑一次。
+本 fork 已把 `skills/` 产物**提交进仓库**（上游是安装时用 `prepare` 现生成），所以安装过程
+**不含任何构建脚本**：pnpm 11 默认禁止 git 依赖执行构建脚本，这里不会触发，也**不需要**在
+profile 的 `pnpm-workspace.yaml` 里加 `allowBuilds`。
 
-从本地目录安装（需要先执行 `npm install` 触发暂存）：
+从本地目录安装：
 
 ```bash
-git clone https://github.com/GongYuanCaiJi/dsh-archify.git
-cd dsh-archify && npm install        # prepare 产出 skills/
+git clone https://github.com/AEmbers/dsh-archify.git
 dsh plugin --profile <你的 profile> add ../dsh-archify
 ```
 
-环境要求：Node.js `^22.19.0 || >=24.0.0`，dsh `0.1.0-rc.6`。
+改了 `archify/` 之后用 `npm run stage` 重新生成 `skills/`（测试会校验两者逐字节一致）。
+
+环境要求：Node.js `^22.19.0 || >=24.0.0`，dsh `>=0.2.1-alpha.5`（已在 0.2.1-alpha.5 实测）。
 
 ## 🚀 用法
 
@@ -158,21 +160,25 @@ Describe a system, and the agent authors the JSON spec and delivers the HTML:
 ## 📦 Install
 
 ```bash
-dsh plugin --profile <your-profile> add github:GongYuanCaiJi/dsh-archify
+dsh plugin --profile <your-profile> add github:AEmbers/dsh-archify
 ```
 
-The `prepare` script stages `archify/` into `skills/` on install. If pnpm blocks the build step,
-add this package to `allowBuilds` in the profile's `pnpm-workspace.yaml` and re-run.
+This fork **commits the `skills/` payload** (upstream generates it at install time with `prepare`),
+so installing runs **no build script at all** — pnpm 11 refuses those for git dependencies, and this
+fork never triggers that path, so no `allowBuilds` entry in the profile's `pnpm-workspace.yaml` is
+needed.
 
-From a local directory (run `npm install` first to trigger staging):
+From a local directory:
 
 ```bash
-git clone https://github.com/GongYuanCaiJi/dsh-archify.git
-cd dsh-archify && npm install        # prepare stages skills/
+git clone https://github.com/AEmbers/dsh-archify.git
 dsh plugin --profile <your-profile> add ../dsh-archify
 ```
 
-Requires Node.js `^22.19.0 || >=24.0.0` and dsh `0.1.0-rc.6`.
+After editing `archify/`, run `npm run stage` to regenerate `skills/` (the test suite diffs the two
+byte-for-byte).
+
+Requires Node.js `^22.19.0 || >=24.0.0` and dsh `>=0.2.1-alpha.5` (verified on 0.2.1-alpha.5).
 
 ## 🚀 Usage
 

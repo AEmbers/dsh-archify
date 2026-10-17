@@ -1,0 +1,2 @@
+# Keep the tree LF everywhere so a git install yields the same bytes on every OS.
+* text=auto eol=lf

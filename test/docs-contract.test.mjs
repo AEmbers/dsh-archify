@@ -26,8 +26,11 @@ test('README covers install, invoke, uninstall, produced-files, security, and up
   const readme = read('README.md');
   // Install must use the git spec — dsh-archify is not on npm yet (npm view
   // returns 404), so a bare `add dsh-archify` would 404 (G1/H1).
-  assert.match(readme, /dsh plugin[^\n]*add github:GongYuanCaiJi\/dsh-archify/);
+  assert.match(readme, /dsh plugin[^\n]*add github:AEmbers\/dsh-archify/);
+  // The fork ships the staged skills/ payload, so the docs must say the install
+  // runs no build script (the "no allowBuilds needed" claim).
   assert.match(readme, /allowBuilds/);
+  assert.match(readme, /no build script|不含任何构建脚本/);
   assert.match(readme, /node -v|^22\.19\.0|\^22\.19\.0/);
   assert.doesNotMatch(readme, /dsh plugin[^\n]*add dsh-archify\s*$/m);
   assert.doesNotMatch(readme, /allowBuilds:\s*true/);

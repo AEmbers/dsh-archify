@@ -1,7 +1,6 @@
 .upstream/
 node_modules/
 dist/
-skills/
 .serena/
 .DS_Store
 *.tgz

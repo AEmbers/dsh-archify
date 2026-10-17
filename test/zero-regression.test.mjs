@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { listRelativeFiles, stageCleanArchify } from '../scripts/staging.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..');
@@ -57,13 +59,33 @@ test('the pinned upstream release tag and commit are declared in THIRD_PARTY_NOT
   assert.match(notices, /shasum/i);
 });
 
-test('the repository has exactly one checked-in Archify SKILL.md and no generated DSH payload', () => {
+test('the committed skills/ payload is byte-identical to a fresh clean staging', () => {
   const skillFiles = git(['ls-files', '*SKILL.md']).split('\n').filter(Boolean);
-  assert.deepEqual(skillFiles, ['archify/SKILL.md']);
-  // skills/ is a gitignored build artifact produced by `prepare`; it must never
-  // be tracked even though it exists on disk after an install/build.
-  const trackedSkills = git(['ls-files', 'skills']);
-  assert.equal(trackedSkills, '');
+  assert.deepEqual(skillFiles, ['archify/SKILL.md', 'skills/archify/SKILL.md']);
+  // The fork commits the sanitized distribution copy (`skills/archify`) so that
+  // `dsh plugin add github:...` never needs a lifecycle script — pnpm 11 blocks
+  // git dependency build scripts unless the consumer allowlists them, which is
+  // exactly the install friction this fork removes. A committed copy can go
+  // stale, so re-stage from `archify/` and compare byte-for-byte.
+  const committedRoot = path.join(repoRoot, 'skills', 'archify');
+  const committed = git(['ls-files', 'skills']).split('\n').filter(Boolean)
+    .map((entry) => entry.slice('skills/archify/'.length));
+  assert.ok(committed.length > 50, `committed payload looks truncated: ${committed.length} files`);
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'archify-stage-'));
+  try {
+    const fresh = path.join(scratch, 'archify');
+    stageCleanArchify({ repoRoot, dest: fresh });
+    assert.deepEqual(listRelativeFiles(fresh), committed.slice().sort());
+    const drift = [];
+    for (const relative of committed) {
+      if (sha256(path.join(fresh, ...relative.split('/'))) !== sha256(path.join(committedRoot, ...relative.split('/')))) {
+        drift.push(relative);
+      }
+    }
+    assert.deepEqual(drift, [], 'committed skills/ drifted from archify/ — run npm run stage');
+  } finally {
+    fs.rmSync(scratch, { recursive: true, force: true });
+  }
 });
 
 test('Archify core does not import, detect, or branch on DeepSeek Harness', () => {

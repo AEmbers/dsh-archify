@@ -10,6 +10,7 @@ import { excludeFromCleanStaging, listRelativeFiles } from '../scripts/staging.m
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..');
 const packScript = path.join(repoRoot, 'scripts', 'pack.mjs');
+const repoVersion = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8')).version;
 
 const FORBIDDEN = [
   '/test/',
@@ -24,7 +25,7 @@ const FORBIDDEN = [
 
 function packTarball() {
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'dsh-archify-tarball-'));
-  const out = path.join(scratch, 'dsh-archify-0.1.0.tgz');
+  const out = path.join(scratch, `dsh-archify-${repoVersion}.tgz`);
   const result = spawnSync(process.execPath, [packScript, '--out', out, '--json'], {
     cwd: repoRoot,
     encoding: 'utf8',
@@ -38,7 +39,7 @@ test('pack command emits a real npm tarball with the expected identity and file 
     assert.equal(result.status, 0, result.stderr || result.stdout);
     const receipt = JSON.parse(result.stdout);
     assert.equal(receipt.name, 'dsh-archify');
-    assert.equal(receipt.version, '0.1.0');
+    assert.equal(receipt.version, repoVersion);
     assert.equal(fs.existsSync(out), true);
     const files = receipt.files.map((file) => file.path.replace(/^package\//, ''));
     for (const required of [
